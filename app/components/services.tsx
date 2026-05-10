@@ -5,17 +5,30 @@ import { type Service, services } from "@/data/services";
 import { fadeUp, stagger } from "@/lib/motion-variants";
 import ScrambleText from "./fx/scramble-text";
 
+// Tailwind class set used as the persistent base tint (gradient overlay).
+// Values bumped from previous round so the colors read clearly the entire time
+// the section is in view, not only during the entrance fade.
 const tintByLight: Record<Service["light"], string> = {
   DAYLIGHT:
-    "from-daylight/20 via-daylight/5 to-transparent",
+    "from-daylight/35 via-daylight/12 to-transparent",
   GOLDEN:
-    "from-golden/30 via-golden/8 to-transparent",
+    "from-golden/45 via-golden/15 to-transparent",
   TWILIGHT:
-    "from-twilight/35 via-magenta/15 to-transparent",
+    "from-twilight/55 via-magenta/22 to-transparent",
   "BLUE-HOUR":
-    "from-blue-hour/35 via-blue-hour/10 to-transparent",
+    "from-blue-hour/55 via-blue-hour/18 to-transparent",
   INTERIOR:
-    "from-interior/30 via-interior/8 to-transparent",
+    "from-interior/50 via-interior/15 to-transparent",
+};
+
+// Solid color (with alpha) used for the cursor-following radial gradient.
+// Mirrors the OKLCH-tinted neutrals defined in globals.css.
+const cursorColorByLight: Record<Service["light"], string> = {
+  DAYLIGHT: "rgba(184, 197, 208, 0.55)",
+  GOLDEN: "rgba(200, 152, 96, 0.6)",
+  TWILIGHT: "rgba(62, 107, 93, 0.7)",
+  "BLUE-HOUR": "rgba(45, 85, 96, 0.7)",
+  INTERIOR: "rgba(212, 165, 116, 0.6)",
 };
 
 export default function Services() {
@@ -56,23 +69,52 @@ export default function Services() {
         >
           {services.map((s, i) => {
             const wide = s.code === "TWI" || s.code === "RUSH";
+            const cursorColor = cursorColorByLight[s.light];
+
+            const onMove = (e: React.MouseEvent<HTMLLIElement>) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              const x = ((e.clientX - r.left) / r.width) * 100;
+              const y = ((e.clientY - r.top) / r.height) * 100;
+              e.currentTarget.style.setProperty("--mx", `${x}%`);
+              e.currentTarget.style.setProperty("--my", `${y}%`);
+            };
+
             return (
               <motion.li
                 key={s.code}
                 variants={fadeUp}
                 data-cursor="frame"
+                onMouseMove={onMove}
+                style={{
+                  // CSS variables consumed by the cursor-following overlay.
+                  // Default values place the radial center at top-left when no
+                  // mouse has moved yet (e.g. on initial render).
+                  ["--mx" as string]: "20%",
+                  ["--my" as string]: "20%",
+                  ["--cursor-color" as string]: cursorColor,
+                }}
                 className={
                   "group relative flex h-full flex-col justify-between overflow-hidden rounded-[2px] border border-frame bg-graphite/40 p-3 transition-colors hover:border-frame-strong md:p-6 " +
                   (wide ? "md:col-span-2 md:row-span-1" : "")
                 }
               >
-                {/* Light tint overlay */}
+                {/* Persistent base tint — slow, subtle drift so the colors feel alive while the section is in view. */}
                 <div
                   aria-hidden
                   className={
-                    "pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr opacity-80 " +
+                    "pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr opacity-100 services-tint " +
                     tintByLight[s.light]
                   }
+                />
+
+                {/* Cursor-following radial gradient — only renders on devices with a real hover-capable cursor. */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100"
+                  style={{
+                    background:
+                      "radial-gradient(circle at var(--mx) var(--my), var(--cursor-color) 0%, transparent 55%)",
+                  }}
                 />
 
                 <div className="flex items-start justify-between">
@@ -106,6 +148,23 @@ export default function Services() {
           })}
         </motion.ul>
       </div>
+
+      {/* Subtle slow drift on the gradient background-position so the tint feels
+          alive while the section is in view. Pure CSS, GPU-cheap, respects reduced motion. */}
+      <style jsx>{`
+        :global(.services-tint) {
+          background-size: 140% 140%;
+          background-position: 0% 0%;
+          animation: tintDrift 18s ease-in-out infinite alternate;
+        }
+        @keyframes tintDrift {
+          from { background-position: 0% 0%; }
+          to   { background-position: 100% 100%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          :global(.services-tint) { animation: none; }
+        }
+      `}</style>
     </section>
   );
 }

@@ -100,7 +100,7 @@ export default function Pricing() {
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              className="snap-center shrink-0 w-[calc(100vw-2rem)] md:w-auto md:shrink"
+              className="snap-center shrink-0 w-[calc(100vw-7rem)] md:w-auto md:shrink"
             >
               <Tier tier={t} />
             </li>

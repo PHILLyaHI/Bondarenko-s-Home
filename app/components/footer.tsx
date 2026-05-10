@@ -107,11 +107,11 @@ export default function Footer() {
 
         {/* Wordmark — massive on desktop, stacked on mobile */}
         <div className="mt-20 select-none overflow-hidden md:mt-32">
-          {/* Desktop / tablet: 2-line clamp wordmark */}
+          {/* Desktop / tablet: 2-line clamp wordmark — capped so "Bondarenko" never overflows the viewport at any desktop width. */}
           <h2
             className="hidden font-display leading-[0.85] tracking-[-0.04em] text-paper sm:block"
             style={{
-              fontSize: "clamp(3rem, 22vw, 22rem)",
+              fontSize: "clamp(3rem, 16vw, 13rem)",
               fontVariationSettings: '"opsz" 144, "SOFT" 100, "WONK" 1',
             }}
           >

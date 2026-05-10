@@ -13,7 +13,15 @@ export default function Testimonials() {
   const scrollerRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
   const pausedUntilRef = useRef<number>(0);
+  const inViewRef = useRef<boolean>(true);
+
+  // Keep activeRef in sync so the long-lived autoplay interval reads the
+  // latest value without needing to re-create itself on every state change.
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
 
   const isMobile = () =>
     typeof window !== "undefined" &&
@@ -23,28 +31,65 @@ export default function Testimonials() {
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Track which mobile card is closest to viewport center via IntersectionObserver.
+  // Pick the card whose center is closest to the scroller viewport center.
+  // More reliable than IntersectionObserver during a smooth-scroll because
+  // the IO can lag the scroll position.
+  const computeActiveFromScroll = () => {
+    const root = scrollerRef.current;
+    if (!root) return null;
+    const center = root.scrollLeft + root.clientWidth / 2;
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    itemRefs.current.forEach((el, i) => {
+      if (!el) return;
+      const cardCenter = el.offsetLeft + el.clientWidth / 2;
+      const dist = Math.abs(cardCenter - center);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestIdx = i;
+      }
+    });
+    return bestIdx;
+  };
+
+  // Track which mobile card is closest to viewport center via scroll events
+  // (real-time, fires throughout manual swipe + smooth scroll).
   useEffect(() => {
     const root = scrollerRef.current;
     if (!root) return;
     if (!isMobile()) return;
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const idx = computeActiveFromScroll();
+        if (idx != null) setActive(idx);
+      });
+    };
+    root.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      root.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // Track section in-view so autoplay only runs when visible.
+  useEffect(() => {
+    const root = scrollerRef.current;
+    if (!root) return;
+    if (!isMobile()) return;
+    const sectionEl = root.closest("section");
+    if (!sectionEl) return;
     const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible.length > 0) {
-          const idx = itemRefs.current.indexOf(visible[0].target as HTMLLIElement);
-          if (idx >= 0) setActive(idx);
-        }
-      },
-      { root, threshold: [0.5, 0.75, 1] }
+      ([entry]) => { inViewRef.current = entry.isIntersecting; },
+      { threshold: 0.2 }
     );
-    itemRefs.current.forEach((el) => el && obs.observe(el));
+    obs.observe(sectionEl);
     return () => obs.disconnect();
   }, []);
 
-  // Pause autoplay for 10s when user interacts manually (touch/wheel/pointer).
+  // Pause autoplay 10s on any manual interaction (touch, wheel, pointerdown).
   useEffect(() => {
     const root = scrollerRef.current;
     if (!root) return;
@@ -62,36 +107,25 @@ export default function Testimonials() {
     };
   }, []);
 
-  // Autoplay: every AUTOPLAY_MS, advance to next card with infinite loop.
-  // Skips when paused, when reduced-motion, or when section is offscreen.
+  // Autoplay: long-lived interval, no deps. Reads latest active via ref so it
+  // never tears down. Loops infinitely. Skips when paused, when reduced-motion,
+  // or when section is offscreen.
   useEffect(() => {
     if (!isMobile()) return;
     if (reducedMotion()) return;
-    let inView = true;
-    const sectionEl = scrollerRef.current?.closest("section");
-    if (sectionEl) {
-      const visObs = new IntersectionObserver(
-        ([entry]) => { inView = entry.isIntersecting; },
-        { threshold: 0.2 }
-      );
-      visObs.observe(sectionEl);
-      var cleanupObs = () => visObs.disconnect();
-    }
     const id = setInterval(() => {
       if (Date.now() < pausedUntilRef.current) return;
-      if (!inView) return;
-      const next = (active + 1) % testimonials.length;
+      if (!inViewRef.current) return;
       const root = scrollerRef.current;
+      if (!root) return;
+      const next = (activeRef.current + 1) % testimonials.length;
       const el = itemRefs.current[next];
-      if (!root || !el) return;
+      if (!el) return;
       const target = el.offsetLeft - (root.clientWidth - el.clientWidth) / 2;
       root.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
     }, AUTOPLAY_MS);
-    return () => {
-      clearInterval(id);
-      cleanupObs?.();
-    };
-  }, [active]);
+    return () => clearInterval(id);
+  }, []);
 
   const goTo = (i: number) => {
     pausedUntilRef.current = Date.now() + PAUSE_AFTER_INTERACTION_MS;

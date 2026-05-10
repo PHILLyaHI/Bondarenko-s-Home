@@ -96,7 +96,13 @@ export default function TrustStrip() {
             to   { transform: translateX(-33.333%); }
           }
           .animate-marquee {
-            animation: marquee 38s linear infinite;
+            animation: marquee 22s linear infinite;
+          }
+          /* Desktop keeps the original slower 38s pace. */
+          @media (min-width: 768px) {
+            .animate-marquee {
+              animation-duration: 38s;
+            }
           }
           @media (prefers-reduced-motion: reduce) {
             .animate-marquee { animation: none; }
