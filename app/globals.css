@@ -126,21 +126,16 @@
   }
 
   /* Global baseline scaling, derived from user-tested variants.
-     - Mobile baseline adopts /v/md (1.06×) — comfortably larger than the
-       browser default for thumb-distance reading.
-     - Desktop baseline adopts /v/xs (0.88×) under zoom: 0.9 — the cleanest
-       desktop reading we tested.
-     Variant routes (/v/<slug>) still override via the [data-text-scale]
-     selector below so the A/B comparison page remains useful. */
-  @media (max-width: 767px) {
-    html {
-      font-size: calc(16px * 1.06);
-    }
+     Both mobile and desktop adopt /v/md (1.06×) — the comfortable reading
+     size. Desktop also keeps the zoom: 0.9 page-scale so the overall
+     composition stays tuned. Variant routes (/v/<slug>) still override via
+     the [data-text-scale] selector below for side-by-side A/B comparison. */
+  html {
+    font-size: calc(16px * 1.06);
   }
   @media (min-width: 768px) {
     html {
       zoom: 0.9;
-      font-size: calc(16px * 0.88);
     }
   }
 

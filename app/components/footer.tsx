@@ -107,11 +107,13 @@ export default function Footer() {
 
         {/* Wordmark — massive on desktop, stacked on mobile */}
         <div className="mt-20 select-none overflow-hidden md:mt-32">
-          {/* Desktop / tablet: 2-line clamp wordmark — capped so "Bondarenko" never overflows the viewport at any desktop width. */}
+          {/* Desktop / tablet: 2-line clamp wordmark — dialed down a notch so
+             it reads as a signature, not a billboard. Cap reduced from 13rem → 9rem
+             and the vw growth from 16vw → 11vw. */}
           <h2
             className="hidden font-display leading-[0.85] tracking-[-0.04em] text-paper sm:block"
             style={{
-              fontSize: "clamp(3rem, 16vw, 13rem)",
+              fontSize: "clamp(2.5rem, 11vw, 9rem)",
               fontVariationSettings: '"opsz" 144, "SOFT" 100, "WONK" 1',
             }}
           >
@@ -121,12 +123,11 @@ export default function Footer() {
               {" "}Photography
             </span>
           </h2>
-          {/* Mobile: 3-line stack, fits viewport. Sized so the longest word
-             ("Photography", 11ch) fits inside container at 360px viewport. */}
+          {/* Mobile: 3-line stack, fits viewport. */}
           <h2
             className="block font-display leading-[0.95] tracking-[-0.04em] text-paper sm:hidden"
             style={{
-              fontSize: "clamp(2.25rem, 13vw, 4.5rem)",
+              fontSize: "clamp(2rem, 11vw, 3.75rem)",
               fontVariationSettings: '"opsz" 144, "SOFT" 100, "WONK" 1',
             }}
           >

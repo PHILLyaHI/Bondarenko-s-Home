@@ -47,7 +47,7 @@ export default function Services() {
     <section
       id="services"
       aria-label="Services"
-      className="relative bg-ink py-24 md:py-40"
+      className="relative bg-ink py-24 md:py-24"
     >
       <div className="mx-auto max-w-[1600px] px-4 md:px-8">
         <div className="grid gap-8 md:grid-cols-12 md:gap-8">
@@ -76,7 +76,7 @@ export default function Services() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}
           variants={stagger(0.05)}
-          className="mt-12 grid grid-cols-2 gap-3 md:mt-20 md:grid-cols-4 md:gap-4"
+          className="mt-12 grid grid-cols-2 gap-3 md:mt-10 md:grid-cols-4 md:gap-4"
         >
           {services.map((s, i) => {
             const wide = s.code === "TWI" || s.code === "RUSH";
@@ -145,7 +145,7 @@ export default function Services() {
                   </div>
                 </div>
 
-                <div className="relative z-10 mt-6 md:mt-16">
+                <div className="relative z-10 mt-6 md:mt-10">
                   <h3 className="font-display text-[1.15rem] leading-[1.1] text-paper md:text-[2rem] md:leading-[1.05]">
                     {s.name}
                   </h3>

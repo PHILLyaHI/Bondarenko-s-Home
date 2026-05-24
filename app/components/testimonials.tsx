@@ -205,7 +205,7 @@ export default function Testimonials() {
   return (
     <section
       aria-label="Testimonials"
-      className="relative bg-graphite/30 py-24 md:py-40"
+      className="relative bg-graphite/30 py-24 md:py-24"
     >
       <div className="mx-auto max-w-[1600px] px-4 md:px-8">
         <div className="grid gap-8 md:grid-cols-12 md:gap-8">
@@ -243,7 +243,7 @@ export default function Testimonials() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={stagger(0.1)}
-          className="mt-12 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 scrollbar-hide md:mx-0 md:mt-20 md:grid md:grid-cols-12 md:gap-8 md:overflow-visible md:px-0"
+          className="mt-12 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 scrollbar-hide md:mx-0 md:mt-10 md:grid md:grid-cols-12 md:gap-8 md:overflow-visible md:px-0"
         >
           {slides.map((t, i) => {
             const isClone = i === N;

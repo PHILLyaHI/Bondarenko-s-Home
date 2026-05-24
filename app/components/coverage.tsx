@@ -10,7 +10,7 @@ export default function Coverage() {
     <section
       id="coverage"
       aria-label="Coverage area"
-      className="relative bg-ink py-24 md:py-40"
+      className="relative bg-ink py-24 md:py-24"
     >
       <div className="mx-auto max-w-[1600px] px-4 md:px-8">
         <div className="grid gap-8 md:grid-cols-12 md:gap-8">
@@ -33,7 +33,7 @@ export default function Coverage() {
           </div>
         </div>
 
-        <div className="mt-12 grid gap-8 md:mt-20 md:grid-cols-12 md:gap-8">
+        <div className="mt-12 grid gap-8 md:mt-10 md:grid-cols-12 md:gap-8">
           {/* Map — phone gets a square crop + larger SVG text via the .bp-mobile selector. */}
           <motion.div
             initial={{ opacity: 0 }}

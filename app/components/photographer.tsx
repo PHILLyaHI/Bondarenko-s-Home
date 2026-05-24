@@ -1,17 +1,15 @@
 "use client";
 
 /**
- * Photographer — editorial portrait section that replaces the desktop
- * Manifesto and the mobile "buyers scroll" block. Hosts Ben's portrait,
- * the signature pull-quote, and absorbs the Trusted-by intro + the
- * 1,200+ / 32% / 8-YR stat block from TrustStrip.
+ * Photographer — editorial portrait section. Houses Ben's portrait, the
+ * signature pull-quote, and the 1,200+ / 32% / 8-YR stat block.
  *
  * Two registers, one component:
- *  - Mobile: production-still / cinema-slate stack — portrait → quote →
- *    receipts → brokerage list → CTAs.
+ *  - Mobile: production-still stack — portrait → quote → trusted-by intro
+ *    → stat row → CTAs. Brokerage names live in the TrustStrip marquee.
  *  - Desktop: magazine spread — 5-col portrait left, 7-col editorial copy
- *    right, with a massive italic Fraunces pull-quote dominating the right
- *    column and a horizontal stat row below.
+ *    right, with the italic Fraunces pull-quote dominating the right column
+ *    and a horizontal stat row below.
  */
 
 import Image from "next/image";
@@ -61,7 +59,7 @@ export default function Photographer() {
       />
 
       {/* ─── MOBILE LAYOUT ──────────────────────────────────────────────── */}
-      <div className="mx-auto max-w-[1600px] px-4 pb-20 pt-20 md:hidden">
+      <div className="mx-auto max-w-[1600px] px-4 pb-16 pt-16 md:hidden">
         {/* Eyebrow */}
         <motion.div
           initial="hidden"
@@ -128,78 +126,79 @@ export default function Photographer() {
           </div>
         </motion.figure>
 
-        {/* Pull quote */}
+        {/* Pull quote — flows as a single paragraph, like the desktop version. */}
         <motion.blockquote
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.4 }}
-          variants={stagger(0.08, 0.05)}
+          variants={stagger(0.07, 0.05)}
           className="relative mt-10"
         >
           <motion.span
             variants={fadeUp}
             aria-hidden
-            className="block font-display text-[3.4rem] leading-none text-sage opacity-70"
+            className="block font-display text-[3rem] leading-none text-sage opacity-70"
           >
             &ldquo;
           </motion.span>
           <motion.p
             variants={fadeUp}
-            className="-mt-2 font-display text-[2.15rem] leading-[1.05] tracking-[-0.018em] text-paper"
+            className="-mt-1 font-display text-[2rem] leading-[1.06] tracking-[-0.018em] text-paper"
             style={{ fontVariationSettings: '"opsz" 96, "SOFT" 35' }}
           >
-            <em className="not-italic [font-style:italic]">Buyers scroll.</em>
-            <span> Yours should be the one</span>{" "}
-            <em className="not-italic [font-style:italic]">
-              they slow down for.
-            </em>
+            <em className="not-italic [font-style:italic]">Buyers scroll.</em>{" "}
+            <span className="text-mist">Yours should be the one</span>{" "}
+            <em className="not-italic [font-style:italic]">they slow down for.</em>
           </motion.p>
           <motion.figcaption
             variants={fadeUp}
             className="mt-5 flex items-center gap-3 text-[0.62rem] tracking-[0.22em] uppercase text-mist"
           >
             <span aria-hidden className="h-px w-7 bg-frame-strong" />
-            Ben Bondarenko · the studio
+            Ben Bondarenko
           </motion.figcaption>
         </motion.blockquote>
 
-        {/* Receipts */}
+        {/* Trusted-by intro + stat row.
+            Stats laid out as a clean three-column inline row with hairline
+            separators — same vocabulary as desktop, scaled for phone. */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
           variants={stagger(0.07, 0.05)}
-          className="mt-12 border-t border-frame pt-8"
+          className="mt-10 border-t border-frame pt-7"
         >
-          <motion.div variants={fadeUp} className="flex items-baseline justify-between gap-4">
-            <div className="text-eyebrow text-mist">
-              <span className="text-sage">▶</span> TRUSTED&nbsp;BY
-            </div>
-            <span className="text-[0.58rem] tracking-[0.22em] uppercase tabular-nums text-haze">
-              03 receipts
-            </span>
+          <motion.div variants={fadeUp} className="text-eyebrow text-mist">
+            <span className="text-sage">▶</span> TRUSTED&nbsp;BY
           </motion.div>
           <motion.p variants={fadeUp} className="mt-3 max-w-[28ch] text-sm text-haze">
             Listing agents at the Sound's top brokerages.
           </motion.p>
-          <motion.dl variants={fadeUp} className="mt-6 grid grid-cols-3 gap-3">
-            {stats.map((s) => (
-              <div key={s.label} className="rounded-[2px] border border-frame bg-graphite/40 p-3">
-                <dt className="font-display text-[1.65rem] leading-none text-paper">{s.num}</dt>
-                <dd className="mt-2 font-mono text-[0.55rem] tracking-[0.18em] uppercase text-haze leading-snug">
+
+          <motion.dl
+            variants={fadeUp}
+            className="mt-7 grid grid-cols-3"
+          >
+            {stats.map((s, i) => (
+              <div
+                key={s.label}
+                className={
+                  "flex flex-col gap-2 " +
+                  (i > 0 ? "border-l border-frame pl-3" : "pr-3")
+                }
+              >
+                <dt className="font-display text-[1.55rem] leading-none text-paper tabular-nums">
+                  {s.num}
+                </dt>
+                <dd className="font-mono text-[0.55rem] tracking-[0.18em] uppercase text-mist leading-snug">
                   {s.label}
                 </dd>
               </div>
             ))}
           </motion.dl>
-          <motion.ul variants={fadeUp} className="mt-6 flex flex-wrap gap-x-3 gap-y-1.5 text-[0.62rem] tracking-[0.18em] uppercase text-mist">
-            {brokerages.map((b, i) => (
-              <li key={b} className="inline-flex items-center gap-3">
-                <span className="text-paper">{b}</span>
-                {i < brokerages.length - 1 && <span aria-hidden className="text-frame-strong">/</span>}
-              </li>
-            ))}
-          </motion.ul>
+
+          {/* CTAs */}
           <motion.div variants={fadeUp} className="mt-8 flex flex-nowrap items-center gap-2">
             <a
               href="#work"
@@ -222,9 +221,8 @@ export default function Photographer() {
       </div>
 
       {/* ─── DESKTOP LAYOUT (md+) ───────────────────────────────────────── */}
-      <div className="mx-auto hidden max-w-[1600px] px-8 py-36 md:block lg:py-44">
-        {/* Top metadata strip — eyebrow on the left, coordinates on the right,
-            with a hairline rule between them as a publication mast-head. */}
+      <div className="mx-auto hidden max-w-[1600px] px-8 py-20 md:block lg:py-24">
+        {/* Mast-head — eyebrow on the left, cinema-slate metadata on the right. */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -245,7 +243,7 @@ export default function Photographer() {
           </motion.div>
         </motion.div>
 
-        <div className="mt-14 grid grid-cols-12 gap-8 lg:gap-12">
+        <div className="mt-10 grid grid-cols-12 items-start gap-8 lg:gap-12">
           {/* ── Portrait column ─────────────────────────────────────────── */}
           <motion.figure
             initial={{ opacity: 0, y: 28 }}
@@ -299,13 +297,6 @@ export default function Photographer() {
                 </span>
               </div>
             </div>
-
-            {/* Cinema slate footer beneath the portrait */}
-            <figcaption className="mt-4 flex items-center justify-between border-t border-frame pt-3 text-eyebrow-sm text-mist">
-              <span className="tabular-nums">PORTRAIT 01 / 03</span>
-              <span className="text-frame-strong">·</span>
-              <span>SHOT FOR THE STUDIO PAGE</span>
-            </figcaption>
           </motion.figure>
 
           {/* ── Editorial column ─────────────────────────────────────────── */}
@@ -316,52 +307,44 @@ export default function Photographer() {
             variants={stagger(0.08, 0.18)}
             className="col-span-7 flex flex-col"
           >
-            {/* Section label */}
-            <motion.div variants={fadeUp} className="flex items-baseline gap-4 text-eyebrow text-mist">
-              <span className="text-sage">▼</span>
-              THE STUDIO
-              <span className="h-px flex-1 bg-frame-strong" />
-              <span className="text-eyebrow-sm tabular-nums">01 — 03</span>
-            </motion.div>
-
-            {/* Pull quote — the moment. */}
-            <motion.blockquote variants={fadeUp} className="relative mt-10">
+            {/* Pull quote — the moment. The opening " sits inline so it
+                cannot collide with the column edge under overflow:hidden. */}
+            <motion.blockquote variants={fadeUp} className="relative pl-1">
               <span
                 aria-hidden
-                className="absolute -left-3 -top-7 font-display text-[6rem] leading-none text-sage opacity-50 lg:text-[8rem]"
+                className="block font-display text-[5rem] leading-none text-sage opacity-55 lg:text-[6.5rem]"
               >
                 &ldquo;
               </span>
               <p
-                className="font-display text-[clamp(2.6rem,4.4vw,4.6rem)] leading-[0.98] tracking-[-0.022em] text-paper"
+                className="-mt-3 font-display text-[clamp(2.4rem,3.8vw,4.2rem)] leading-[1.0] tracking-[-0.02em] text-paper"
                 style={{ fontVariationSettings: '"opsz" 144, "SOFT" 60, "WONK" 1' }}
               >
                 <em className="not-italic [font-style:italic]">Buyers scroll.</em>{" "}
                 <span className="text-mist">Yours should be the one</span>{" "}
                 <em className="not-italic [font-style:italic]">they slow down for.</em>
               </p>
-              <figcaption className="mt-7 flex items-center gap-4 text-eyebrow uppercase text-mist">
+              <figcaption className="mt-6 flex items-center gap-4 text-eyebrow uppercase text-mist">
                 <span aria-hidden className="h-px w-12 bg-sage" />
                 <span className="text-paper">Ben Bondarenko</span>
-                <span className="text-frame-strong">·</span>
-                <span>the studio, est. 2018</span>
               </figcaption>
             </motion.blockquote>
 
-            {/* Stat row — production credits. Sharp grid, mono labels. */}
+            {/* Stat row — production credits. Constrained to the column so
+                the right-side cell can never push past the grid edge. */}
             <motion.dl
               variants={fadeUp}
-              className="mt-14 grid grid-cols-3 border-t border-frame"
+              className="mt-10 grid w-full max-w-full grid-cols-3 overflow-hidden border-t border-frame"
             >
               {stats.map((s, i) => (
                 <div
                   key={s.label}
                   className={
-                    "flex flex-col gap-2 py-6 pr-5 " +
-                    (i > 0 ? "border-l border-frame pl-6" : "")
+                    "flex min-w-0 flex-col gap-2 py-5 " +
+                    (i === 0 ? "pr-4" : "border-l border-frame px-4")
                   }
                 >
-                  <dt className="font-display text-[clamp(2rem,3vw,3.4rem)] leading-none text-paper tabular-nums">
+                  <dt className="font-display text-[clamp(1.8rem,2.6vw,3rem)] leading-none text-paper tabular-nums">
                     {s.num}
                   </dt>
                   <dd className="text-eyebrow-sm uppercase text-mist">
@@ -371,10 +354,10 @@ export default function Photographer() {
               ))}
             </motion.dl>
 
-            {/* Trusted-by ticker */}
+            {/* Trusted-by ticker — desktop only carries the brokerage list. */}
             <motion.div
               variants={fadeUp}
-              className="mt-10 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-t border-frame pt-6"
+              className="mt-8 flex flex-wrap items-baseline gap-x-5 gap-y-2 border-t border-frame pt-5"
             >
               <span className="text-eyebrow text-mist">
                 <span className="text-sage">▶</span> TRUSTED&nbsp;BY
@@ -382,7 +365,7 @@ export default function Photographer() {
               <ul className="flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
                 {brokerages.map((b, i) => (
                   <li key={b} className="inline-flex items-baseline gap-3">
-                    <span className="font-display text-[1.1rem] tracking-tight text-paper [font-style:italic]">
+                    <span className="font-display text-[1.05rem] tracking-tight text-paper [font-style:italic]">
                       {b}
                     </span>
                     {i < brokerages.length - 1 && (
@@ -394,7 +377,7 @@ export default function Photographer() {
             </motion.div>
 
             {/* CTAs */}
-            <motion.div variants={fadeUp} className="mt-12 flex flex-wrap items-center gap-3">
+            <motion.div variants={fadeUp} className="mt-9 flex flex-wrap items-center gap-3">
               <a
                 href="#work"
                 data-cursor="frame"
@@ -409,13 +392,6 @@ export default function Photographer() {
                 className="inline-flex min-h-11 items-center gap-2 rounded-full bg-paper px-4 py-2 text-eyebrow text-ink transition-colors hover:bg-sage hover:text-paper"
               >
                 BOOK A SHOOT
-                <span aria-hidden>→</span>
-              </a>
-              <a
-                href="#book"
-                className="ml-auto hidden text-eyebrow-sm text-mist transition-colors hover:text-paper lg:inline-flex lg:items-center lg:gap-2"
-              >
-                OR — REQUEST A CALLBACK
                 <span aria-hidden>→</span>
               </a>
             </motion.div>
