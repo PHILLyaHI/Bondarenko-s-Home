@@ -173,7 +173,8 @@ export default function Booking() {
               </div>
 
               {/* Form-mode toggle — switches between a short callback-request form
-                  (Ben reaches back out) and the full booking request flow. */}
+                  (Ben reaches back out) and the full booking request flow.
+                  Single-line labels keep the toggle compact. */}
               <div
                 role="tablist"
                 aria-label="Form type"
@@ -181,9 +182,9 @@ export default function Booking() {
               >
                 {(
                   [
-                    { v: "contact", label: "GET CONTACTED",   hint: "Ben calls you back" },
-                    { v: "booking", label: "BOOK A SHOOT",    hint: "Pick a date now"    },
-                  ] as { v: FormMode; label: string; hint: string }[]
+                    { v: "contact", label: "GET CONTACTED" },
+                    { v: "booking", label: "BOOK A SHOOT"  },
+                  ] as { v: FormMode; label: string }[]
                 ).map((opt) => {
                   const sel = mode === opt.v;
                   return (
@@ -194,16 +195,13 @@ export default function Booking() {
                       aria-selected={sel}
                       onClick={() => setMode(opt.v)}
                       className={
-                        "flex flex-col items-center gap-0.5 rounded-full px-4 py-2.5 text-eyebrow-sm transition-colors " +
+                        "inline-flex items-center justify-center rounded-full px-4 py-2 text-eyebrow-sm transition-colors " +
                         (sel
                           ? "bg-paper text-ink"
                           : "text-mist hover:text-paper")
                       }
                     >
-                      <span>{opt.label}</span>
-                      <span className={"text-[0.55rem] tracking-[0.18em] " + (sel ? "text-ink/55" : "text-haze")}>
-                        {opt.hint}
-                      </span>
+                      {opt.label}
                     </button>
                   );
                 })}

@@ -172,10 +172,10 @@ export default function Photographer() {
           variants={stagger(0.07, 0.05)}
           className="mt-10 border-t border-frame pt-7"
         >
-          <motion.div variants={fadeUp} className="text-eyebrow text-mist">
+          <motion.div variants={fadeUp} className="text-[0.78rem] tracking-[0.22em] uppercase font-mono font-medium text-mist">
             <span className="text-sage">▶</span> TRUSTED&nbsp;BY
           </motion.div>
-          <motion.p variants={fadeUp} className="mt-3 max-w-[28ch] text-sm text-haze">
+          <motion.p variants={fadeUp} className="mt-3 max-w-[28ch] text-[1rem] leading-snug text-haze">
             Listing agents at the Sound's top brokerages.
           </motion.p>
 
@@ -191,10 +191,10 @@ export default function Photographer() {
                   (i > 0 ? "border-l border-frame pl-3" : "pr-3")
                 }
               >
-                <dt className="font-display text-[1.55rem] leading-none text-paper tabular-nums">
+                <dt className="font-display text-[1.85rem] leading-none text-paper tabular-nums">
                   {s.num}
                 </dt>
-                <dd className="font-mono text-[0.55rem] tracking-[0.18em] uppercase text-mist leading-snug">
+                <dd className="font-mono text-[0.62rem] tracking-[0.18em] uppercase text-mist leading-snug">
                   {s.label}
                 </dd>
               </div>
@@ -253,7 +253,7 @@ export default function Photographer() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
-            className="relative col-span-5"
+            className="relative col-span-4"
           >
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2px] border border-frame">
               <Image
@@ -308,7 +308,7 @@ export default function Photographer() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.25 }}
             variants={stagger(0.08, 0.18)}
-            className="col-span-7 flex flex-col"
+            className="col-span-8 flex flex-col"
           >
             {/* Pull quote — the moment. The opening " is absolutely positioned
                 so it overlaps the first word of the quote rather than living on

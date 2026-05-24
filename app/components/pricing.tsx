@@ -143,7 +143,7 @@ function Tier({ tier }: { tier: PricingTier }) {
       variants={fadeUp}
       data-cursor="frame"
       className={
-        "group relative flex h-full flex-col overflow-hidden rounded-[3px] border bg-graphite/40 p-7 md:p-8 " +
+        "group relative flex h-full flex-col overflow-hidden rounded-[3px] border bg-graphite/40 p-5 md:p-8 " +
         (featured
           ? "border-sage/55 md:scale-[1.02] md:py-10 ring-1 ring-sage/30"
           : "border-frame")
@@ -162,38 +162,33 @@ function Tier({ tier }: { tier: PricingTier }) {
         </span>
       )}
 
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <div className="text-eyebrow-sm text-mist">[{tier.code}]</div>
-          <h3 className="mt-2 font-display text-[2rem] leading-none text-paper md:text-[2.5rem]">
+          <h3 className="mt-1 font-display text-[1.85rem] leading-none text-paper md:mt-2 md:text-[2.5rem]">
             {tier.name}
           </h3>
         </div>
-        <div className="text-right">
-          <div className="font-display text-[2rem] leading-none text-paper tabular-nums md:text-[2.6rem]">
-            ${tier.price}
-          </div>
-          <div className="mt-1 text-eyebrow-sm tabular-nums text-mist">
-            {tier.exposure}
-          </div>
+        <div className="self-center font-display text-[1.85rem] leading-none text-paper tabular-nums md:text-[2.6rem]">
+          ${tier.price}
         </div>
       </div>
 
-      <p className="mt-7 max-w-[32ch] text-[0.95rem] leading-snug text-haze md:text-sm">{tier.tagline}</p>
+      <p className="mt-5 max-w-[32ch] text-[0.92rem] leading-snug text-haze md:mt-7 md:text-sm">{tier.tagline}</p>
 
-      <dl className="mt-7 grid grid-cols-2 gap-x-5 gap-y-3 border-y border-frame py-5 text-eyebrow-sm">
+      <dl className="mt-5 grid grid-cols-2 gap-x-5 gap-y-2 border-y border-frame py-4 text-eyebrow-sm md:mt-7 md:gap-y-3 md:py-5">
         <dt className="text-mist">DELIVERY</dt>
         <dd className="text-right text-paper">{tier.delivery}</dd>
         <dt className="text-mist">SIZE</dt>
         <dd className="text-right text-paper">{tier.squareFt}</dd>
       </dl>
 
-      <ul className="mt-7 space-y-4 md:space-y-3">
+      <ul className="mt-5 space-y-3 md:mt-7 md:space-y-3">
         {tier.includes.map((item) => (
-          <li key={item} className="flex items-start gap-3 text-[0.95rem] leading-snug text-paper md:text-sm">
+          <li key={item} className="flex items-start gap-3 text-[0.92rem] leading-snug text-paper md:text-sm">
             <span
               aria-hidden
-              className="mt-[8px] block size-[6px] flex-shrink-0 rounded-full bg-sage"
+              className="mt-[7px] block size-[6px] flex-shrink-0 rounded-full bg-sage"
               style={{ boxShadow: "0 0 6px var(--color-sage)" }}
             />
             <span>{item}</span>
@@ -204,7 +199,7 @@ function Tier({ tier }: { tier: PricingTier }) {
       <a
         href="#book"
         className={
-          "mt-9 inline-flex items-center justify-between rounded-full px-4 py-3 text-eyebrow transition-colors " +
+          "mt-6 inline-flex items-center justify-between rounded-full px-4 py-2.5 text-eyebrow transition-colors md:mt-9 md:py-3 " +
           (featured
             ? "bg-paper text-ink hover:bg-sage hover:text-ink"
             : "border border-frame-strong text-paper hover:bg-graphite/80")

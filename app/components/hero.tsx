@@ -78,20 +78,20 @@ export default function Hero() {
           variants={stagger(0.08, 0.35)}
           className="display-1 mt-12 max-w-[18ch] text-paper md:mt-0"
         >
-          <motion.span variants={fadeUp} className="block text-paper md:text-mist">
+          <motion.span variants={fadeUp} className="block text-paper">
             Make your
           </motion.span>
           <motion.span variants={fadeUp} className="block">
             <em className="not-italic font-display [font-style:italic] text-paper">
               listing
             </em>{" "}
-            <span className="text-paper md:text-mist">the one</span>
+            <span className="text-paper">the one</span>
           </motion.span>
           <motion.span variants={fadeUp} className="block">
             <em className="not-italic font-display [font-style:italic] text-paper">
               buyers
             </em>{" "}
-            <span className="text-paper md:text-mist">click first.</span>
+            <span className="text-paper">click first.</span>
           </motion.span>
         </motion.h1>
 
