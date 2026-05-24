@@ -219,7 +219,9 @@ export default function Booking() {
               {/* Tier picker — same 3-column cinema-slate card grid on both
                   viewports. Card has the tier name (display) on top and the
                   price (mono caps) below, with a sage dot in the corner when
-                  selected and a stronger border + tinted fill on the active card. */}
+                  selected and a stronger border + tinted fill on the active card.
+                  Mobile drops the [CODE] label and shrinks the name so the
+                  three cards always fit a phone column without clipping. */}
               <Field label="01 · TIER">
                 <div className="grid grid-cols-3 gap-2 md:gap-3">
                   {tiers.map((t) => {
@@ -231,13 +233,14 @@ export default function Booking() {
                         onClick={() => setTier(t.code)}
                         aria-pressed={sel}
                         className={
-                          "group relative flex flex-col items-start gap-1 rounded-[3px] border px-3 py-3 text-left transition-all duration-300 md:px-4 md:py-4 " +
+                          "group relative flex min-w-0 flex-col items-start gap-1 overflow-hidden rounded-[3px] border px-2.5 py-3 text-left transition-all duration-300 md:px-4 md:py-4 " +
                           (sel
                             ? "border-sage bg-sage/20 text-paper shadow-[0_0_0_1px_var(--color-sage)/40] md:bg-sage/15"
                             : "border-frame-strong bg-ink/40 text-paper hover:border-paper hover:bg-graphite/60")
                         }
                       >
-                        {/* Selected dot — top-right corner */}
+                        {/* Selected dot — top-right corner. Smaller hit zone on
+                            mobile because the [CODE] eyebrow is gone. */}
                         <span
                           aria-hidden
                           className={
@@ -247,16 +250,18 @@ export default function Booking() {
                               : "bg-frame-strong")
                           }
                         />
-                        {/* Top metadata — tier code in mono */}
-                        <span className="text-[0.55rem] tracking-[0.22em] uppercase tabular-nums text-mist md:text-eyebrow-sm">
+                        {/* Top metadata — tier code in mono, desktop only. */}
+                        <span className="hidden text-eyebrow-sm tabular-nums uppercase text-mist md:block">
                           [{t.code}]
                         </span>
-                        {/* Tier name in display Fraunces */}
-                        <span className="mt-0.5 font-display text-[1.05rem] leading-none text-paper md:text-[1.4rem]">
+                        {/* Tier name in display Fraunces.
+                            Mobile uses a smaller cap so "Signature" / "Essential" /
+                            "Premium" all fit a phone-column width without overflow. */}
+                        <span className="block w-full truncate font-display text-[0.95rem] leading-tight text-paper md:mt-0 md:text-[1.4rem] md:leading-none">
                           {t.name}
                         </span>
                         {/* Price */}
-                        <span className="mt-2 font-mono text-[0.6rem] tracking-[0.18em] uppercase tabular-nums text-haze md:text-eyebrow-sm md:text-mist">
+                        <span className="mt-1.5 font-mono text-[0.6rem] tracking-[0.18em] uppercase tabular-nums text-haze md:mt-2 md:text-eyebrow-sm md:text-mist">
                           ${t.price}
                         </span>
                       </button>
@@ -414,11 +419,6 @@ function ContactFields({
 }) {
   return (
     <>
-      <p className="mb-6 max-w-[42ch] text-[0.92rem] leading-snug text-haze md:text-sm md:text-mist">
-        Leave a number or email and Ben will reach out within the hour, 7am–9pm
-        Pacific. No phone tag, no quote forms.
-      </p>
-
       <div className="grid gap-7 md:grid-cols-2 md:gap-6">
         <Field label="01 · NAME">
           <input
