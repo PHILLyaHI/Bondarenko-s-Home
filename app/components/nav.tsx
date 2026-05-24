@@ -64,6 +64,12 @@ export default function Nav() {
             ? "bg-ink/80 backdrop-blur-md border-b border-frame"
             : "bg-transparent")
         }
+        // Inside in-app browsers (Telegram, Instagram, etc.) the system URL
+        // bar sits on top of the viewport. `env(safe-area-inset-top)` resolves
+        // to that bar's height when the document declares viewportFit:"cover"
+        // (see app/layout.tsx). Padding the header pushes our content below
+        // the chrome so the wordmark + hamburger stay visible.
+        style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
       >
         <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between px-4 md:h-16 md:px-8">
           <a

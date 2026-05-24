@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import Grain from "./components/fx/grain";
@@ -25,6 +25,19 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
   weight: ["400", "500", "600"],
 });
+
+/**
+ * Viewport — viewportFit:"cover" is required for `env(safe-area-inset-*)`
+ * to resolve to non-zero values inside iOS Safari, Telegram's in-app browser,
+ * Instagram WebView, etc. Without it, those environments cover the top of
+ * the page with their URL/search bar and our fixed nav lands under it.
+ */
+export const viewport: Viewport = {
+  themeColor: "#1c1f1d",
+  viewportFit: "cover",
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: "Bondarenko Home Photography — Seattle Real Estate Photography",
