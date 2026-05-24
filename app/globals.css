@@ -125,14 +125,18 @@
     position: relative;
   }
 
-  /* Global desktop scaling.
-     User-tested: site looks right at 90% browser zoom on desktop; at 100% it
-     feels too large. Single-knob shrink so every element inherits proportionally.
-     Mobile is sized natively from its mobile-first tokens — leave it at 1.
-
-     Baseline desktop type also adopts the /v/xs variant scale (0.88×) because
-     it produced the cleanest desktop reading. Variant routes still override
-     via the [data-text-scale] selector below for side-by-side comparison. */
+  /* Global baseline scaling, derived from user-tested variants.
+     - Mobile baseline adopts /v/md (1.06×) — comfortably larger than the
+       browser default for thumb-distance reading.
+     - Desktop baseline adopts /v/xs (0.88×) under zoom: 0.9 — the cleanest
+       desktop reading we tested.
+     Variant routes (/v/<slug>) still override via the [data-text-scale]
+     selector below so the A/B comparison page remains useful. */
+  @media (max-width: 767px) {
+    html {
+      font-size: calc(16px * 1.06);
+    }
+  }
   @media (min-width: 768px) {
     html {
       zoom: 0.9;
