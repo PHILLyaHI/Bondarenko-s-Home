@@ -218,12 +218,12 @@ export default function Booking() {
                 />
               ) : (
                 <>
-              {/* Tier picker.
-                  Mobile: 3-column grid of small cinema-slate cards — name on
-                  top, price on the bottom, selected state lifts to sage.
-                  Desktop: original pill row, unchanged in feel. */}
+              {/* Tier picker — same 3-column cinema-slate card grid on both
+                  viewports. Card has the tier name (display) on top and the
+                  price (mono caps) below, with a sage dot in the corner when
+                  selected and a stronger border + tinted fill on the active card. */}
               <Field label="01 · TIER">
-                <div className="grid grid-cols-3 gap-2 md:flex md:flex-wrap md:gap-2">
+                <div className="grid grid-cols-3 gap-2 md:gap-3">
                   {tiers.map((t) => {
                     const sel = tier === t.code;
                     return (
@@ -233,26 +233,32 @@ export default function Booking() {
                         onClick={() => setTier(t.code)}
                         aria-pressed={sel}
                         className={
-                          // Mobile card; desktop pill. Two distinct visual languages,
-                          // one button, one selected-state vocabulary.
-                          "group relative flex flex-col items-center gap-1 rounded-[3px] border px-2 py-3 text-center transition-colors " +
-                          "md:flex-row md:items-center md:gap-1.5 md:rounded-full md:px-3 md:py-2 md:text-left " +
+                          "group relative flex flex-col items-start gap-1 rounded-[3px] border px-3 py-3 text-left transition-all duration-300 md:px-4 md:py-4 " +
                           (sel
-                            ? "border-sage bg-sage/15 text-paper md:border-magenta md:bg-magenta md:text-paper"
-                            : "border-frame-strong text-paper hover:border-paper md:border-frame md:text-mist")
+                            ? "border-sage bg-sage/20 text-paper shadow-[0_0_0_1px_var(--color-sage)/40] md:bg-sage/15"
+                            : "border-frame-strong bg-ink/40 text-paper hover:border-paper hover:bg-graphite/60")
                         }
                       >
+                        {/* Selected dot — top-right corner */}
                         <span
                           aria-hidden
                           className={
-                            "absolute right-2 top-2 size-1.5 rounded-full transition-colors md:hidden " +
-                            (sel ? "bg-sage shadow-[0_0_8px_var(--color-sage)]" : "bg-frame-strong")
+                            "absolute right-2 top-2 size-1.5 rounded-full transition-all " +
+                            (sel
+                              ? "bg-sage shadow-[0_0_10px_var(--color-sage)]"
+                              : "bg-frame-strong")
                           }
                         />
-                        <span className="font-display text-[1.05rem] leading-none md:text-eyebrow-sm md:font-mono md:tracking-[0.18em] md:uppercase">
+                        {/* Top metadata — tier code in mono */}
+                        <span className="text-[0.55rem] tracking-[0.22em] uppercase tabular-nums text-mist md:text-eyebrow-sm">
+                          [{t.code}]
+                        </span>
+                        {/* Tier name in display Fraunces */}
+                        <span className="mt-0.5 font-display text-[1.05rem] leading-none text-paper md:text-[1.4rem]">
                           {t.name}
                         </span>
-                        <span className="text-[0.62rem] tracking-[0.2em] uppercase tabular-nums text-haze md:text-eyebrow-sm md:tracking-normal md:tabular-nums md:text-inherit">
+                        {/* Price */}
+                        <span className="mt-2 font-mono text-[0.6rem] tracking-[0.18em] uppercase tabular-nums text-haze md:text-eyebrow-sm md:text-mist">
                           ${t.price}
                         </span>
                       </button>

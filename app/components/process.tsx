@@ -132,100 +132,160 @@ export default function Process() {
 }
 
 /**
- * Filmstrip-style vertical timeline for mobile.
+ * Mobile "Call Sheet" timeline.
  *
- * - A sage rail runs down the left side, anchored to the section's scroll
- *   progress: it fills from top to bottom as the user scrolls through the
- *   section, so the timeline visually "develops" as you read.
- * - Each step is rendered as a filmstrip frame: large italic Fraunces number
- *   on the rail, a numbered marker, and a card with title + body + caption.
- * - Sprocket ticks decorate the rail.
- * - Steps stagger in: marker stamps (scale + rotate), title slides from right,
- *   body fades up. Each step's reveal triggers once on viewport entry.
+ * Aesthetic — a film-set production board / publication call sheet:
+ *  - A horizontal 24-hour day arc at the top, scaled to the section's scroll
+ *    progress. A glowing dot traces from blue-hour through golden to dusk
+ *    and back, marking where you are in the workflow as you scroll.
+ *  - Below the arc, the four steps are laid out as editorial rows:
+ *    big italic Fraunces frame number on the right, mono time stamp on the
+ *    left, display title, body. A hairline rule separates rows like a
+ *    schedule.
+ *  - Each row reveals on entry: the time slides from the left, the number
+ *    stamps in with a tiny rotation, title slides up, body fades.
+ *  - One bold typographic move per row, otherwise restrained chrome — the
+ *    professionalism the user asked for comes from the proportions.
  */
 function MobileFilmstrip({ steps }: { steps: Step[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    // Begin filling when the strip enters the bottom of viewport;
-    // top-out when the strip's bottom hits the viewport top.
-    offset: ["start 80%", "end 25%"],
+    offset: ["start 75%", "end 30%"],
   });
-  // Soften the progress so the fill chases the scroll without jitter.
-  const railFill = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 22,
-    mass: 0.4,
+  const smooth = useSpring(scrollYProgress, {
+    stiffness: 90,
+    damping: 26,
+    mass: 0.45,
   });
-  const railHeight = useTransform(railFill, (v) => `${Math.min(1, Math.max(0, v)) * 100}%`);
+  const arcDotLeft = useTransform(smooth, (v) => `${Math.min(1, Math.max(0, v)) * 100}%`);
+  const arcFillWidth = useTransform(smooth, (v) => `${Math.min(1, Math.max(0, v)) * 100}%`);
+
+  // Markers along the day arc, positioned by their notional hour 0–24.
+  // 08:30 → 35.4% ; 10:00 → 41.6% ; 21:00 → 87.5% ; +1d 09:00 → reuse 37.5%
+  // We layout them as ascending fractions across the arc visually.
+  const arcStops = [
+    { time: "08:30", pos: 0.05, label: "Book" },
+    { time: "10:00", pos: 0.32, label: "Shoot" },
+    { time: "21:00", pos: 0.68, label: "Edit" },
+    { time: "09:00", pos: 0.95, label: "Deliver" },
+  ];
 
   return (
-    <div
-      ref={ref}
-      className="relative mt-14 md:hidden"
-      style={{
-        // Mask makes the rail fade at the very top and bottom edges.
-        WebkitMaskImage:
-          "linear-gradient(180deg, transparent 0%, black 4%, black 96%, transparent 100%)",
-        maskImage:
-          "linear-gradient(180deg, transparent 0%, black 4%, black 96%, transparent 100%)",
-      }}
-    >
-      {/* Static rail (track) */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute left-[28px] top-0 bottom-0 w-px bg-frame-strong/55"
-      />
-      {/* Animated fill rail — scaled to scroll progress */}
-      <motion.span
-        aria-hidden
-        style={{ height: railHeight }}
-        className="pointer-events-none absolute left-[28px] top-0 w-px origin-top"
-      >
-        <span
+    <div ref={ref} className="relative mt-10 md:hidden">
+      {/* ── Call-sheet header strip ─────────────────────────────────────── */}
+      <div className="mb-6 flex items-center justify-between text-[0.58rem] tracking-[0.22em] uppercase tabular-nums text-mist">
+        <span className="text-paper">CALL SHEET · SHOOT DAY</span>
+        <span className="text-haze">04 SCENES</span>
+      </div>
+
+      {/* ── 24-hour day arc ─────────────────────────────────────────────── */}
+      <div className="relative h-[68px] w-full">
+        {/* Hour ticks */}
+        <div className="absolute inset-x-0 top-7 flex justify-between">
+          {Array.from({ length: 25 }).map((_, k) => (
+            <span
+              key={k}
+              aria-hidden
+              className={
+                "block w-px " +
+                (k % 6 === 0 ? "h-2.5 bg-paper/70" : "h-1.5 bg-frame-strong")
+              }
+            />
+          ))}
+        </div>
+        {/* Hour rail (track) */}
+        <div
           aria-hidden
-          className="block h-full w-px"
+          className="absolute inset-x-0 top-[27px] h-px"
           style={{
             background:
-              "linear-gradient(180deg, rgba(123,165,144,0) 0%, rgba(123,165,144,0.85) 22%, rgba(212,165,116,0.85) 78%, rgba(200,152,96,0) 100%)",
-            boxShadow: "0 0 12px rgba(123,165,144,0.5)",
+              "linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.28) 50%, rgba(255,255,255,0.06) 100%)",
           }}
         />
-        {/* Leading edge dot */}
-        <span
+        {/* Day-color fill — chases scroll progress */}
+        <motion.div
           aria-hidden
-          className="absolute -bottom-[5px] left-1/2 size-[10px] -translate-x-1/2 rounded-full bg-sage"
-          style={{ boxShadow: "0 0 12px var(--color-sage)" }}
-        />
-      </motion.span>
-
-      {/* Sprocket ticks */}
-      {Array.from({ length: 28 }).map((_, i) => (
-        <span
-          key={i}
+          style={{ width: arcFillWidth }}
+          className="absolute left-0 top-[26px] h-[3px] origin-left rounded-full"
+        >
+          <div
+            className="h-full w-full rounded-full"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(45,85,96,0) 0%, rgba(123,165,144,0.85) 18%, rgba(200,152,96,0.9) 55%, rgba(62,107,93,0.95) 82%, rgba(45,85,96,0.6) 100%)",
+              boxShadow: "0 0 14px rgba(200,152,96,0.45)",
+            }}
+          />
+        </motion.div>
+        {/* Marker stops with labels */}
+        {arcStops.map((stop, i) => (
+          <div
+            key={i}
+            aria-hidden
+            className="absolute top-0"
+            style={{ left: `${stop.pos * 100}%`, transform: "translateX(-50%)" }}
+          >
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[0.55rem] tracking-[0.18em] tabular-nums text-paper">
+                {stop.time}
+              </span>
+              <span className="block size-2 rounded-full border border-paper/60 bg-ink" />
+              <span className="text-[0.5rem] tracking-[0.22em] uppercase text-haze">
+                {stop.label}
+              </span>
+            </div>
+          </div>
+        ))}
+        {/* Moving day-position indicator */}
+        <motion.span
           aria-hidden
-          className="pointer-events-none absolute left-[22px] h-px w-3 bg-frame-strong/55"
-          style={{ top: `${(i + 1) * (100 / 30)}%` }}
-        />
-      ))}
+          style={{ left: arcDotLeft }}
+          className="absolute top-[22px] -translate-x-1/2"
+        >
+          <span
+            className="block size-[14px] rounded-full bg-paper"
+            style={{
+              boxShadow:
+                "0 0 0 4px var(--color-ink), 0 0 12px rgba(200,152,96,0.75)",
+            }}
+          />
+        </motion.span>
+      </div>
 
-      <ol className="relative">
+      {/* ── Editorial row stack ─────────────────────────────────────────── */}
+      <ol className="mt-12">
         {steps.map((s, i) => (
-          <FilmFrame key={s.code} step={s} index={i} total={steps.length} />
+          <CallSheetRow
+            key={s.code}
+            step={s}
+            index={i}
+            total={steps.length}
+            isLast={i === steps.length - 1}
+          />
         ))}
       </ol>
+
+      {/* ── Footnote ───────────────────────────────────────────────────── */}
+      <div className="mt-6 flex items-center gap-3 text-[0.58rem] tracking-[0.22em] uppercase text-haze">
+        <span aria-hidden className="h-px flex-1 bg-frame-strong" />
+        <span>SAME-DAY RUSH · ON REQUEST</span>
+        <span aria-hidden className="h-px flex-1 bg-frame-strong" />
+      </div>
     </div>
   );
 }
 
-function FilmFrame({
+function CallSheetRow({
   step,
   index,
   total,
+  isLast,
 }: {
   step: Step;
   index: number;
   total: number;
+  isLast: boolean;
 }) {
   return (
     <motion.li
@@ -233,94 +293,86 @@ function FilmFrame({
       whileInView="visible"
       viewport={{ once: true, amount: 0.45 }}
       variants={stagger(0.08, 0.05)}
-      className="relative pl-16 pb-12 last:pb-0"
+      className={
+        "grid grid-cols-[auto_1fr] gap-x-5 gap-y-3 pb-8 " +
+        (isLast ? "" : "mb-8 border-b border-frame")
+      }
     >
-      {/* Numbered marker — stamps in with a small rotate so it feels printed */}
+      {/* Time column */}
+      <motion.div
+        variants={{
+          hidden: { x: -16, opacity: 0 },
+          visible: {
+            x: 0,
+            opacity: 1,
+            transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+          },
+        }}
+        className="flex flex-col items-start gap-2 pt-1"
+      >
+        <span className="text-[0.55rem] tracking-[0.24em] uppercase tabular-nums text-mist">
+          {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+        </span>
+        <span className="font-mono text-[1.05rem] tabular-nums text-paper">
+          {step.time}
+        </span>
+        <span className="text-[0.55rem] tracking-[0.22em] uppercase text-haze">
+          {step.caption}
+        </span>
+      </motion.div>
+
+      {/* Frame number — big italic Fraunces, anchor on the right */}
       <motion.span
         aria-hidden
         variants={{
-          hidden: { scale: 0.55, rotate: -8, opacity: 0 },
+          hidden: { opacity: 0, scale: 0.7, rotate: -6 },
           visible: {
+            opacity: 1,
             scale: 1,
             rotate: 0,
-            opacity: 1,
-            transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+            transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.05 },
           },
         }}
-        className="absolute left-0 top-1 grid size-[56px] place-items-center rounded-full border border-frame-strong bg-ink font-display text-[1.25rem] leading-none text-paper"
-        style={{
-          boxShadow:
-            "0 0 0 5px var(--color-ink), 0 0 22px rgba(123,165,144,0.35)",
-        }}
+        className="row-span-1 self-start justify-self-end font-display text-[3.6rem] leading-[0.85] text-paper"
+        style={{ fontVariationSettings: '"opsz" 144, "SOFT" 80, "WONK" 1' }}
       >
         <em className="not-italic [font-style:italic]">{step.code}</em>
       </motion.span>
 
-      {/* Time pill — slides down into place */}
-      <motion.span
-        aria-hidden
-        variants={{
-          hidden: { y: -6, opacity: 0 },
-          visible: {
-            y: 0,
-            opacity: 1,
-            transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
-          },
-        }}
-        className="mb-3 inline-flex items-center gap-2 text-[0.58rem] tracking-[0.22em] uppercase tabular-nums text-mist"
-      >
-        <span className="text-frame-strong">{String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
-        <span aria-hidden className="block h-px w-4 bg-frame-strong" />
-        <span className="text-paper">{step.time}</span>
-      </motion.span>
-
-      {/* Filmstrip frame — card with title sliding from right, body fading up */}
-      <div className="relative overflow-hidden rounded-[3px] border border-frame bg-graphite/55">
-        {/* Frame sprocket strip along the top */}
-        <div
-          aria-hidden
-          className="flex h-3 items-center justify-around border-b border-frame bg-ink/60"
+      {/* Content column (spans both grid columns underneath) */}
+      <div className="col-span-2 -mt-2">
+        <motion.h3
+          variants={{
+            hidden: { y: 18, opacity: 0 },
+            visible: {
+              y: 0,
+              opacity: 1,
+              transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.08 },
+            },
+          }}
+          className="font-display text-[1.6rem] leading-[1.05] tracking-[-0.012em] text-paper"
         >
-          {Array.from({ length: 12 }).map((_, k) => (
-            <span
-              key={k}
-              className="block h-1.5 w-1.5 rounded-[1px] bg-frame-strong/70"
-            />
-          ))}
-        </div>
+          {step.title}
+        </motion.h3>
+        <motion.p
+          variants={fadeUp}
+          className="mt-3 max-w-[44ch] text-[0.95rem] leading-[1.55] text-paper/75"
+        >
+          {step.body}
+        </motion.p>
 
-        <div className="p-5">
-          <motion.h3
-            variants={{
-              hidden: { x: 24, opacity: 0 },
-              visible: {
-                x: 0,
-                opacity: 1,
-                transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
-              },
-            }}
-            className="font-display text-[1.45rem] leading-[1.1] text-paper"
-          >
-            {step.title}
-          </motion.h3>
-
-          <motion.p
-            variants={fadeUp}
-            className="mt-3 text-[0.95rem] leading-snug text-haze"
-          >
-            {step.body}
-          </motion.p>
-
-          <motion.div
-            variants={fadeUp}
-            className="mt-5 flex items-center justify-between gap-3 border-t border-frame pt-3 text-[0.58rem] tracking-[0.22em] uppercase tabular-nums text-mist"
-          >
-            <span className="text-paper">{step.caption}</span>
-            <span aria-hidden className="font-mono">
-              FRAME · {String(index + 1).padStart(2, "0")}
-            </span>
-          </motion.div>
-        </div>
+        {/* Hairline connector + index pip — sits at the bottom of each row's
+            content so the eye gets a horizontal cue between scenes. */}
+        <motion.div
+          variants={fadeUp}
+          className="mt-5 flex items-center gap-3"
+        >
+          <span aria-hidden className="block h-px w-12 bg-paper/55" />
+          <span className="text-[0.55rem] tracking-[0.24em] uppercase tabular-nums text-paper/60">
+            SCENE · {String(index + 1).padStart(2, "0")}
+          </span>
+          <span aria-hidden className="block h-px flex-1 bg-frame-strong" />
+        </motion.div>
       </div>
     </motion.li>
   );
