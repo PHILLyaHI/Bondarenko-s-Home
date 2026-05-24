@@ -56,82 +56,92 @@ export default function Nav() {
   };
 
   return (
-    <header
-      className={
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300 " +
-        (scrolled
-          ? "bg-ink/80 backdrop-blur-md border-b border-frame"
-          : "bg-transparent")
-      }
-    >
-      <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between px-4 md:h-16 md:px-8">
-        <a
-          href="#top"
-          className="group flex items-center gap-2 text-paper"
-          aria-label="Bondarenko Home Photography — back to top"
-        >
-          <span
-            aria-hidden
-            className="size-[7px] rounded-full bg-magenta"
-            style={{ boxShadow: "0 0 10px var(--color-magenta)" }}
-          />
-          <span className="font-display text-[1.05rem] tracking-tight md:text-[1.15rem]">
-            Bondarenko<span className="text-mist"> Home</span>
-          </span>
-        </a>
-
-        <nav className="hidden items-center gap-8 md:flex">
-          {links.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="group relative text-eyebrow-sm text-mist transition-colors hover:text-paper"
-            >
-              <span className="text-frame-strong group-hover:text-magenta transition-colors">
-                {l.code}
-              </span>
-              <span className="ml-2">{l.label}</span>
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2">
+    <>
+      <header
+        className={
+          "fixed inset-x-0 top-0 z-50 transition-all duration-300 " +
+          (scrolled
+            ? "bg-ink/80 backdrop-blur-md border-b border-frame"
+            : "bg-transparent")
+        }
+      >
+        <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between px-4 md:h-16 md:px-8">
           <a
-            href="#book"
-            className="hidden rounded-full border border-paper bg-paper px-4 py-2 text-eyebrow-sm text-ink transition-colors hover:bg-magenta hover:border-magenta hover:text-paper md:inline-flex md:items-center md:gap-2"
+            href="#top"
+            className="group flex items-center gap-2 text-paper"
+            aria-label="Bondarenko Home Photography — back to top"
           >
-            BOOK A SHOOT
-            <Arrow />
-          </a>
-          <button
-            type="button"
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            onClick={() => setOpen((s) => !s)}
-            className="grid size-11 place-items-center rounded-full border border-frame bg-graphite/40 text-paper md:hidden"
-          >
-            <span className="grid gap-[5px]">
-              <span
-                className={
-                  "block h-[1.5px] w-[18px] bg-paper transition-transform " +
-                  (open ? "translate-y-[3px] rotate-45" : "")
-                }
-              />
-              <span
-                className={
-                  "block h-[1.5px] w-[18px] bg-paper transition-transform " +
-                  (open ? "-translate-y-[3px] -rotate-45" : "")
-                }
-              />
+            <span
+              aria-hidden
+              className="size-[7px] rounded-full bg-magenta"
+              style={{ boxShadow: "0 0 10px var(--color-magenta)" }}
+            />
+            <span className="font-display text-[1.05rem] tracking-tight md:text-[1.15rem]">
+              Bondarenko<span className="text-mist"> Home</span>
             </span>
-          </button>
-        </div>
-      </div>
+          </a>
 
-      {/* Mobile bottom sheet — scrim + sheet, content-driven height */}
+          <nav className="hidden items-center gap-8 md:flex">
+            {links.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="group relative text-eyebrow-sm text-mist transition-colors hover:text-paper"
+              >
+                <span className="text-frame-strong group-hover:text-magenta transition-colors">
+                  {l.code}
+                </span>
+                <span className="ml-2">{l.label}</span>
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <a
+              href="#book"
+              className="hidden rounded-full border border-paper bg-paper px-4 py-2 text-eyebrow-sm text-ink transition-colors hover:bg-magenta hover:border-magenta hover:text-paper md:inline-flex md:items-center md:gap-2"
+            >
+              BOOK A SHOOT
+              <Arrow />
+            </a>
+            <button
+              type="button"
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+              onClick={() => setOpen((s) => !s)}
+              className="grid size-11 place-items-center rounded-full border border-frame bg-graphite/40 text-paper md:hidden"
+            >
+              <span className="grid gap-[5px]">
+                <span
+                  className={
+                    "block h-[1.5px] w-[18px] bg-paper transition-transform " +
+                    (open ? "translate-y-[3px] rotate-45" : "")
+                  }
+                />
+                <span
+                  className={
+                    "block h-[1.5px] w-[18px] bg-paper transition-transform " +
+                    (open ? "-translate-y-[3px] -rotate-45" : "")
+                  }
+                />
+              </span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/*
+        Mobile bottom sheet — rendered as a SIBLING of <header>, not a child.
+        When the header is scrolled, it gets `backdrop-blur-md` which sets
+        backdrop-filter ≠ none and creates a new containing block. Any
+        `position: fixed` descendant of the header then becomes anchored to
+        the header bar (a 56px strip at the top) instead of the viewport,
+        which made the menu open at the very top of the screen mid-scroll.
+        Lifting it out of the header restores true viewport-fixed positioning.
+      */}
       <div
         className={
-          "fixed inset-0 z-40 transition-opacity duration-300 md:hidden " +
+          "fixed inset-0 z-[60] transition-opacity duration-300 md:hidden " +
           (open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0")
         }
         aria-hidden={!open}
@@ -187,7 +197,7 @@ export default function Nav() {
           </div>
         </div>
       </div>
-    </header>
+    </>
   );
 }
 

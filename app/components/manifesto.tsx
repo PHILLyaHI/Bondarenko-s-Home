@@ -8,7 +8,7 @@ export default function Manifesto() {
   return (
     <section
       aria-label="Studio manifesto"
-      className="relative overflow-hidden bg-ink"
+      className="relative hidden overflow-hidden bg-ink md:block"
     >
       {/* Soft golden warm wash */}
       <div

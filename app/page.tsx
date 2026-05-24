@@ -1,7 +1,7 @@
 import Nav from "./components/nav";
 import Hero from "./components/hero";
 import TrustStrip from "./components/trust-strip";
-import Manifesto from "./components/manifesto";
+import Photographer from "./components/photographer";
 import Gallery from "./components/gallery";
 import TwilightFeature from "./components/twilight-feature";
 import Services from "./components/services";
@@ -19,7 +19,8 @@ export default function Home() {
       <main className="pb-32 md:pb-0">
         <Hero />
         <TrustStrip />
-        <Manifesto />
+        {/* Photographer replaces the old "Buyers scroll" Manifesto on both viewports. */}
+        <Photographer />
         <Gallery />
         <TwilightFeature />
         <Services />

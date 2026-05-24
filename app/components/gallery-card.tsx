@@ -23,6 +23,25 @@ const aspectByAspect: Record<Frame["aspect"], string> = {
   square: "aspect-[4/5]",
 };
 
+/**
+ * Per-card hover tint — reuses the same color-by-light-hour vocabulary
+ * the services section uses on scroll. Card colors fade in on hover and
+ * decay back to neutral on exit, the same gesture in reverse.
+ *
+ * Each Frame's `light` field starts with a light-hour keyword
+ * ("Daylight · 14:32", "Golden Hour · …", "Twilight · …", "Blue Hour · …").
+ * We sniff the prefix and map it to a tint that mirrors the OKLCH-tinted
+ * neutrals defined in globals.css.
+ */
+function tintForLight(light: string): string {
+  const head = light.toLowerCase();
+  if (head.startsWith("twilight")) return "rgba(62, 107, 93, 0.55)"; // sage / twilight
+  if (head.startsWith("blue")) return "rgba(45, 85, 96, 0.55)";       // blue hour
+  if (head.startsWith("golden")) return "rgba(200, 152, 96, 0.55)";   // golden
+  if (head.startsWith("interior")) return "rgba(212, 165, 116, 0.55)"; // interior
+  return "rgba(184, 197, 208, 0.45)";                                  // daylight default
+}
+
 export default function GalleryCard({
   frame,
   index,
@@ -52,6 +71,7 @@ export default function GalleryCard({
           "relative w-full overflow-hidden rounded-[2px] border border-frame " +
           aspectByAspect[frame.aspect]
         }
+        style={{ ["--card-tint" as string]: tintForLight(frame.light) }}
       >
         <Image
           src={frameSrc(frame, frame.aspect === "wide" ? 1800 : 1200)}
@@ -59,6 +79,17 @@ export default function GalleryCard({
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+        />
+
+        {/* Hover color tint — same color-appearance gesture the section uses on scroll,
+            re-triggered per card when the cursor hovers. Hover-capable pointers only. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] mix-blend-screen [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100"
+          style={{
+            background:
+              "radial-gradient(ellipse 90% 70% at 50% 60%, var(--card-tint) 0%, transparent 70%)",
+          }}
         />
 
         {/* Overlay gradient on hover */}

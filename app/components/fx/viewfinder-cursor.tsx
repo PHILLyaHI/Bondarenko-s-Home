@@ -13,6 +13,20 @@ export default function ViewfinderCursor() {
     if (!fine || reduced) return;
     setEnabled(true);
 
+    // The site sets `zoom: 0.9` on <html> at the md+ breakpoint to make the
+    // page render as if at 90% browser zoom. Chrome reports pointer-event
+    // clientX/Y in the zoom-deflated coordinate space, so a fixed element
+    // positioned by clientX renders OFFSET by the zoom factor. We read the
+    // computed zoom and divide pointer coords by it so the cursor follows
+    // the real pointer at every variant. Falls back to 1 when unsupported.
+    const readZoom = (): number => {
+      const z = parseFloat(
+        getComputedStyle(document.documentElement).zoom || "1"
+      );
+      return Number.isFinite(z) && z > 0 ? z : 1;
+    };
+    let zoom = readZoom();
+
     let raf = 0;
     let tx = window.innerWidth / 2;
     let ty = window.innerHeight / 2;
@@ -20,14 +34,17 @@ export default function ViewfinderCursor() {
     let cy = ty;
 
     const onMove = (e: PointerEvent) => {
-      tx = e.clientX;
-      ty = e.clientY;
+      tx = e.clientX / zoom;
+      ty = e.clientY / zoom;
     };
     const onOver = (e: PointerEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
       const interactive = target.closest("a, button, [data-cursor='frame']");
       setActive(!!interactive);
+    };
+    const onResize = () => {
+      zoom = readZoom();
     };
 
     function tick() {
@@ -42,11 +59,13 @@ export default function ViewfinderCursor() {
 
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerover", onOver);
+    window.addEventListener("resize", onResize);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerover", onOver);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 

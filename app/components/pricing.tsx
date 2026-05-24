@@ -69,7 +69,7 @@ export default function Pricing() {
             <div className="text-eyebrow text-magenta">
               <ScrambleText text=">> PRICING" />
             </div>
-            <p className="mt-3 text-eyebrow-sm text-mist">
+            <p className="mt-3 hidden text-eyebrow-sm text-mist md:block">
               THREE TIERS · NO HIDDEN LINE-ITEMS
             </p>
           </div>
@@ -100,7 +100,7 @@ export default function Pricing() {
               ref={(el) => {
                 cardRefs.current[i] = el;
               }}
-              className="snap-center shrink-0 w-[calc(100vw-7rem)] md:w-auto md:shrink"
+              className="snap-center shrink-0 w-[calc(100vw-3rem)] sm:w-[calc(100vw-7rem)] md:w-auto md:shrink"
             >
               <Tier tier={t} />
             </li>
@@ -143,7 +143,7 @@ function Tier({ tier }: { tier: PricingTier }) {
       variants={fadeUp}
       data-cursor="frame"
       className={
-        "group relative flex h-full flex-col overflow-hidden rounded-[3px] border bg-graphite/40 p-6 md:p-8 " +
+        "group relative flex h-full flex-col overflow-hidden rounded-[3px] border bg-graphite/40 p-7 md:p-8 " +
         (featured
           ? "border-sage/55 md:scale-[1.02] md:py-10 ring-1 ring-sage/30"
           : "border-frame")
@@ -162,7 +162,7 @@ function Tier({ tier }: { tier: PricingTier }) {
         </span>
       )}
 
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-eyebrow-sm text-mist">[{tier.code}]</div>
           <h3 className="mt-2 font-display text-[2rem] leading-none text-paper md:text-[2.5rem]">
@@ -170,7 +170,7 @@ function Tier({ tier }: { tier: PricingTier }) {
           </h3>
         </div>
         <div className="text-right">
-          <div className="font-display text-[2.2rem] leading-none text-paper tabular-nums md:text-[2.6rem]">
+          <div className="font-display text-[2rem] leading-none text-paper tabular-nums md:text-[2.6rem]">
             ${tier.price}
           </div>
           <div className="mt-1 text-eyebrow-sm tabular-nums text-mist">
@@ -179,21 +179,21 @@ function Tier({ tier }: { tier: PricingTier }) {
         </div>
       </div>
 
-      <p className="mt-6 max-w-[32ch] text-sm text-haze">{tier.tagline}</p>
+      <p className="mt-7 max-w-[32ch] text-[0.95rem] leading-snug text-haze md:text-sm">{tier.tagline}</p>
 
-      <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-2 border-y border-frame py-4 text-eyebrow-sm">
+      <dl className="mt-7 grid grid-cols-2 gap-x-5 gap-y-3 border-y border-frame py-5 text-eyebrow-sm">
         <dt className="text-mist">DELIVERY</dt>
         <dd className="text-right text-paper">{tier.delivery}</dd>
         <dt className="text-mist">SIZE</dt>
         <dd className="text-right text-paper">{tier.squareFt}</dd>
       </dl>
 
-      <ul className="mt-6 space-y-3">
+      <ul className="mt-7 space-y-4 md:space-y-3">
         {tier.includes.map((item) => (
-          <li key={item} className="flex items-start gap-3 text-sm text-paper">
+          <li key={item} className="flex items-start gap-3 text-[0.95rem] leading-snug text-paper md:text-sm">
             <span
               aria-hidden
-              className="mt-[7px] block size-[6px] flex-shrink-0 rounded-full bg-sage"
+              className="mt-[8px] block size-[6px] flex-shrink-0 rounded-full bg-sage"
               style={{ boxShadow: "0 0 6px var(--color-sage)" }}
             />
             <span>{item}</span>
@@ -204,7 +204,7 @@ function Tier({ tier }: { tier: PricingTier }) {
       <a
         href="#book"
         className={
-          "mt-8 inline-flex items-center justify-between rounded-full px-4 py-3 text-eyebrow transition-colors " +
+          "mt-9 inline-flex items-center justify-between rounded-full px-4 py-3 text-eyebrow transition-colors " +
           (featured
             ? "bg-paper text-ink hover:bg-sage hover:text-ink"
             : "border border-frame-strong text-paper hover:bg-graphite/80")

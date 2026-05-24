@@ -23,7 +23,7 @@ export default function TwilightFeature() {
       aria-label="Twilight signature"
       className="relative isolate overflow-hidden bg-ink py-0 md:py-0"
     >
-      <div className="relative h-[70svh] min-h-[460px] w-full md:h-[120svh] md:min-h-[680px]">
+      <div className="relative h-[70svh] min-h-[460px] w-full md:h-[88svh] md:min-h-[640px]">
         <motion.div
           style={{ y, scale }}
           className="absolute inset-0 will-change-transform"
@@ -63,13 +63,21 @@ export default function TwilightFeature() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.25 }}
           variants={stagger(0.08, 0.1)}
-          className="absolute inset-x-4 bottom-12 max-w-[26ch] md:inset-x-8 md:bottom-20 md:max-w-[34ch]"
+          className="absolute inset-x-4 bottom-12 max-w-[26ch] md:inset-x-8 md:bottom-20 md:max-w-[52ch]"
         >
-          <motion.p variants={fadeUp} className="display-2 text-paper">
+          {/* Mobile: original two-line stack. Desktop: short words on one row, long tail on the next. */}
+          <motion.p variants={fadeUp} className="display-2 text-paper md:hidden">
             <em className="not-italic [font-style:italic]">
               His&nbsp;signature.
             </em>
-            <span className="text-mist"> The moment the lights come on.</span>
+            <span className="text-paper"> The moment the lights come on.</span>
+          </motion.p>
+          <motion.p variants={fadeUp} className="hidden display-2 text-paper md:block">
+            <span className="block">
+              <em className="not-italic [font-style:italic]">His&nbsp;signature.</em>{" "}
+              <span className="text-mist">The moment</span>
+            </span>
+            <span className="block text-mist">the lights come on.</span>
           </motion.p>
           <motion.div
             variants={fadeUp}

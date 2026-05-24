@@ -78,20 +78,20 @@ export default function Hero() {
           variants={stagger(0.08, 0.35)}
           className="display-1 mt-12 max-w-[18ch] text-paper md:mt-0"
         >
-          <motion.span variants={fadeUp} className="block text-mist">
+          <motion.span variants={fadeUp} className="block text-paper md:text-mist">
             Make your
           </motion.span>
           <motion.span variants={fadeUp} className="block">
             <em className="not-italic font-display [font-style:italic] text-paper">
               listing
             </em>{" "}
-            <span className="text-mist">the one</span>
+            <span className="text-paper md:text-mist">the one</span>
           </motion.span>
           <motion.span variants={fadeUp} className="block">
             <em className="not-italic font-display [font-style:italic] text-paper">
               buyers
             </em>{" "}
-            <span className="text-mist">click first.</span>
+            <span className="text-paper md:text-mist">click first.</span>
           </motion.span>
         </motion.h1>
 
@@ -99,23 +99,23 @@ export default function Hero() {
           initial="hidden"
           animate="visible"
           variants={stagger(0.06, 1.1)}
-          className="mt-12 grid gap-8 md:mt-0 md:grid-cols-12 md:items-end md:gap-8"
+          className="mt-10 grid gap-6 md:mt-0 md:grid-cols-12 md:items-end md:gap-8"
         >
           <motion.p
             variants={fadeUp}
-            className="text-base text-haze md:col-span-5 md:text-lg"
+            className="text-base text-paper md:col-span-5 md:text-lg md:text-haze"
           >
             Cinematic real estate photography across the Puget Sound.
           </motion.p>
 
           <motion.div
             variants={fadeUp}
-            className="flex flex-wrap items-center gap-3 md:col-span-7 md:justify-end"
+            className="flex flex-nowrap items-center gap-2 md:col-span-7 md:flex-wrap md:gap-3 md:justify-end"
           >
             <a
               href="#work"
               data-cursor="frame"
-              className="group inline-flex items-center gap-3 rounded-full border border-frame-strong bg-graphite/40 px-5 py-3 text-eyebrow text-paper backdrop-blur transition-colors hover:bg-graphite/80"
+              className="group inline-flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-frame-strong bg-graphite/40 px-4 py-3.5 text-[0.62rem] tracking-[0.18em] text-paper backdrop-blur transition-colors hover:bg-graphite/80 md:flex-none md:gap-3 md:px-5 md:py-3 md:text-eyebrow"
             >
               SEE THE WORK
               <ArrowDown className="transition-transform group-hover:translate-y-0.5" />
@@ -123,7 +123,7 @@ export default function Hero() {
             <a
               href="#book"
               data-cursor="frame"
-              className="group inline-flex items-center gap-3 rounded-full bg-paper px-5 py-3 text-eyebrow text-ink transition-colors hover:bg-magenta hover:text-paper"
+              className="group inline-flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-paper px-4 py-3.5 text-[0.62rem] tracking-[0.18em] text-ink transition-colors hover:bg-magenta hover:text-paper md:flex-none md:gap-3 md:px-5 md:py-3 md:text-eyebrow"
             >
               BOOK A SHOOT
               <ArrowRight className="transition-transform group-hover:translate-x-0.5" />

@@ -5,20 +5,35 @@ import { type Service, services } from "@/data/services";
 import { fadeUp, stagger } from "@/lib/motion-variants";
 import ScrambleText from "./fx/scramble-text";
 
-// Tailwind class set used as the persistent base tint (gradient overlay).
-// Values bumped from previous round so the colors read clearly the entire time
-// the section is in view, not only during the entrance fade.
-const tintByLight: Record<Service["light"], string> = {
+// Hover-only saturated tint per light hour. Cards rest neutral; on hover
+// the card's individual color rises in over ~500ms and saturates the surface,
+// echoing the original section entrance reveal but per-card and re-triggerable.
+const hoverTintByLight: Record<Service["light"], string> = {
   DAYLIGHT:
-    "from-daylight/35 via-daylight/12 to-transparent",
+    "from-daylight/55 via-daylight/22 to-transparent",
   GOLDEN:
-    "from-golden/45 via-golden/15 to-transparent",
+    "from-golden/70 via-golden/28 to-transparent",
   TWILIGHT:
-    "from-twilight/55 via-magenta/22 to-transparent",
+    "from-twilight/80 via-sage/38 to-transparent",
   "BLUE-HOUR":
-    "from-blue-hour/55 via-blue-hour/18 to-transparent",
+    "from-blue-hour/80 via-blue-hour/30 to-transparent",
   INTERIOR:
-    "from-interior/50 via-interior/15 to-transparent",
+    "from-interior/75 via-interior/28 to-transparent",
+};
+
+// Quiet base tint kept in the resting state — a hint of color so the card
+// doesn't feel monochrome, but the hover state is the moment.
+const baseTintByLight: Record<Service["light"], string> = {
+  DAYLIGHT:
+    "from-daylight/10 to-transparent",
+  GOLDEN:
+    "from-golden/12 to-transparent",
+  TWILIGHT:
+    "from-twilight/15 to-transparent",
+  "BLUE-HOUR":
+    "from-blue-hour/15 to-transparent",
+  INTERIOR:
+    "from-interior/12 to-transparent",
 };
 
 // Solid color (with alpha) used for the cursor-following radial gradient.
@@ -44,7 +59,7 @@ export default function Services() {
             <div className="text-eyebrow text-interior">
               <ScrambleText text=">> SERVICES" />
             </div>
-            <p className="mt-3 text-eyebrow-sm text-mist">
+            <p className="mt-3 hidden text-eyebrow-sm text-mist md:block">
               EIGHT WAYS TO LIGHT A LISTING
             </p>
           </div>
@@ -98,22 +113,33 @@ export default function Services() {
                   (wide ? "md:col-span-2 md:row-span-1" : "")
                 }
               >
-                {/* Persistent base tint — slow, subtle drift so the colors feel alive while the section is in view. */}
+                {/* Resting base tint — quiet, ambient. Cards never look fully neutral. */}
                 <div
                   aria-hidden
                   className={
-                    "pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr opacity-100 services-tint " +
-                    tintByLight[s.light]
+                    "pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr services-tint " +
+                    baseTintByLight[s.light]
                   }
                 />
 
-                {/* Cursor-following radial gradient — only renders on devices with a real hover-capable cursor. */}
+                {/* Hover saturated tint — per-card color rises in on cursor enter and decays out on leave.
+                    Hover-capable cursors only; on touch screens the resting tint is the whole story. */}
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100"
+                  className={
+                    "pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr opacity-0 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100 " +
+                    hoverTintByLight[s.light]
+                  }
+                />
+
+                {/* Cursor-following radial gradient — only renders on devices with a real hover-capable cursor.
+                    Sits ABOVE the hover tint to add a localized highlight where the cursor is. */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100"
                   style={{
                     background:
-                      "radial-gradient(circle at var(--mx) var(--my), var(--cursor-color) 0%, transparent 55%)",
+                      "radial-gradient(circle at var(--mx) var(--my), var(--cursor-color) 0%, transparent 60%)",
                   }}
                 />
 

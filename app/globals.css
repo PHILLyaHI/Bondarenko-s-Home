@@ -125,6 +125,40 @@
     position: relative;
   }
 
+  /* Global desktop scaling.
+     User-tested: site looks right at 90% browser zoom on desktop; at 100% it
+     feels too large. Single-knob shrink so every element inherits proportionally.
+     Mobile is sized natively from its mobile-first tokens — leave it at 1.
+
+     Baseline desktop type also adopts the /v/xs variant scale (0.88×) because
+     it produced the cleanest desktop reading. Variant routes still override
+     via the [data-text-scale] selector below for side-by-side comparison. */
+  @media (min-width: 768px) {
+    html {
+      zoom: 0.9;
+      font-size: calc(16px * 0.88);
+    }
+  }
+
+  /* Text-size A/B variants. Routes under /v/<slug> set [data-text-scale] on
+     the html element; the matching font-size override applies at any viewport
+     width so the variants can be compared on desktop or phone. Because the
+     global desktop `zoom: 0.9` rule above sits ABOVE this block, the variant
+     multiplier compounds on top of it on desktop (which is what we want — the
+     baseline keeps its tuned look, the variant nudges from there). */
+  html {
+    --text-scale: 1;
+  }
+  html[data-text-scale="xs"] { --text-scale: 0.88; }
+  html[data-text-scale="sm"] { --text-scale: 0.94; }
+  html[data-text-scale="md"] { --text-scale: 1.06; }
+  html[data-text-scale="lg"] { --text-scale: 1.14; }
+  html[data-text-scale="xl"] { --text-scale: 1.22; }
+
+  html[data-text-scale] {
+    font-size: calc(16px * var(--text-scale));
+  }
+
   body {
     font-family: var(--font-sans);
     overflow-x: hidden;

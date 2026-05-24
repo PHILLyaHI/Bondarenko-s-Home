@@ -70,14 +70,14 @@ export default function Gallery() {
       aria-label="Portfolio"
       className="relative overflow-hidden bg-ink"
     >
-      <div className="mx-auto max-w-[1600px] px-4 pt-24 md:px-8 md:pt-32">
+      <div className="mx-auto max-w-[1600px] px-4 pt-24 pb-16 md:px-8 md:pb-0 md:pt-32">
         {/* Section header */}
         <div className="grid gap-8 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-3">
             <div className="text-eyebrow text-magenta">
               <ScrambleText text=">> THE WORK" />
             </div>
-            <p className="mt-3 text-eyebrow-sm text-mist">
+            <p className="mt-3 hidden text-eyebrow-sm text-mist md:block">
               25 RECENT FRAMES · 5 CATEGORIES
             </p>
           </div>
@@ -164,15 +164,19 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Footer note */}
-        <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-frame pt-8 md:mt-24">
-          <p className="text-eyebrow-sm text-mist">
-            ▶ EVERY FRAME EDITED BY HAND · NO STOCK · NO AI COMPOSITES
+        {/* Footer note.
+            Mobile: centered stack with explicit padding so the line breaks
+            cleanly and sits in its own block between the grid and the next
+            section. Desktop: original row-aligned layout. */}
+        <div className="mt-20 flex flex-col items-center gap-4 border-t border-frame pt-8 pb-4 text-center md:mt-24 md:flex-row md:flex-wrap md:items-center md:justify-between md:pb-0 md:text-left">
+          <p className="max-w-[34ch] text-[0.62rem] leading-relaxed tracking-[0.2em] uppercase text-mist md:max-w-none md:text-eyebrow-sm md:leading-normal">
+            <span className="text-sage">▶</span>{" "}
+            EVERY FRAME EDITED BY HAND · NO STOCK · NO AI COMPOSITES
           </p>
           <a
             href="#book"
             data-cursor="frame"
-            className="inline-flex min-h-11 items-center gap-2 py-2 text-eyebrow text-paper transition-colors hover:text-magenta sm:min-h-0 sm:py-0"
+            className="hidden min-h-11 items-center gap-2 py-2 text-eyebrow text-paper transition-colors hover:text-magenta sm:inline-flex sm:min-h-0 sm:py-0"
           >
             BOOK YOUR LISTING
             <span aria-hidden>→</span>

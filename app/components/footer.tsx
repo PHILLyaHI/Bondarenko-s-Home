@@ -78,8 +78,8 @@ export default function Footer() {
             </motion.ul>
           </div>
 
-          {/* Right column: meta */}
-          <motion.div variants={fadeUp} className="md:col-span-7">
+          {/* Right column: meta — hidden on mobile per editorial pass; keeps the footer clean on phone. */}
+          <motion.div variants={fadeUp} className="hidden md:col-span-7 md:block">
             <div className="text-eyebrow text-mist">
               <span className="text-magenta">▼</span> SEATTLE LIGHT TODAY
             </div>

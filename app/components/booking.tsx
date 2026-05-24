@@ -28,7 +28,10 @@ function todayISO(): string {
   return d.toISOString().slice(0, 10);
 }
 
+type FormMode = "contact" | "booking";
+
 export default function Booking() {
+  const [mode, setMode] = useState<FormMode>("contact");
   const [tier, setTier] = useState("SIG");
   const [date, setDate] = useState(todayISO());
   const [time, setTime] = useState("19:00");
@@ -42,6 +45,24 @@ export default function Booking() {
   const tierInfo = useMemo(() => tiers.find((t) => t.code === tier)!, [tier]);
 
   const mailto = useMemo(() => {
+    if (mode === "contact") {
+      const body = [
+        `── BONDARENKO HOME PHOTOGRAPHY · CALLBACK REQUEST ──`,
+        ``,
+        `Please reach out to:`,
+        `Name:    ${name}`,
+        `Email:   ${email}`,
+        `Phone:   ${phone || "(email is fine)"}`,
+        ``,
+        `What they'd like Ben to know:`,
+        notes || "(no details provided)",
+      ].join("\n");
+      const params = new URLSearchParams({
+        subject: `Callback request — ${name || "(no name)"}`,
+        body,
+      });
+      return `mailto:ben@bondarenkohomephoto.com?${params.toString()}`;
+    }
     const body = [
       `── BONDARENKO HOME PHOTOGRAPHY · BOOKING REQUEST ──`,
       ``,
@@ -63,7 +84,7 @@ export default function Booking() {
       body,
     });
     return `mailto:ben@bondarenkohomephoto.com?${params.toString()}`;
-  }, [tierInfo, date, time, size, address, name, email, phone, notes]);
+  }, [mode, tierInfo, date, time, size, address, name, email, phone, notes]);
 
   return (
     <section
@@ -140,15 +161,69 @@ export default function Booking() {
               }
             }}
           >
-            <div className="rounded-[3px] border border-frame bg-graphite/40 p-5 md:p-8">
+            <div className="rounded-[3px] border border-frame-strong bg-graphite/55 p-6 md:border-frame md:bg-graphite/40 md:p-8">
               {/* Mobile-only form-section eyebrow so the card reads unmistakably as a form. */}
-              <div className="mb-6 text-eyebrow text-magenta md:hidden">
-                <span aria-hidden>▶ </span>REQUEST A SHOOT
+              <div className="mb-6 flex items-baseline justify-between md:hidden">
+                <div className="text-eyebrow text-magenta">
+                  <span aria-hidden>▶ </span>{mode === "contact" ? "REQUEST A CALLBACK" : "REQUEST A SHOOT"}
+                </div>
+                <div className="text-[0.58rem] tracking-[0.2em] uppercase text-haze tabular-nums">
+                  {mode === "contact" ? "04 fields" : "09 fields"}
+                </div>
               </div>
 
-              {/* Tier picker */}
+              {/* Form-mode toggle — switches between a short callback-request form
+                  (Ben reaches back out) and the full booking request flow. */}
+              <div
+                role="tablist"
+                aria-label="Form type"
+                className="mb-7 grid grid-cols-2 gap-1 rounded-full border border-frame-strong bg-ink/50 p-1 md:mb-8 md:max-w-[28rem]"
+              >
+                {(
+                  [
+                    { v: "contact", label: "GET CONTACTED",   hint: "Ben calls you back" },
+                    { v: "booking", label: "BOOK A SHOOT",    hint: "Pick a date now"    },
+                  ] as { v: FormMode; label: string; hint: string }[]
+                ).map((opt) => {
+                  const sel = mode === opt.v;
+                  return (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      role="tab"
+                      aria-selected={sel}
+                      onClick={() => setMode(opt.v)}
+                      className={
+                        "flex flex-col items-center gap-0.5 rounded-full px-4 py-2.5 text-eyebrow-sm transition-colors " +
+                        (sel
+                          ? "bg-paper text-ink"
+                          : "text-mist hover:text-paper")
+                      }
+                    >
+                      <span>{opt.label}</span>
+                      <span className={"text-[0.55rem] tracking-[0.18em] " + (sel ? "text-ink/55" : "text-haze")}>
+                        {opt.hint}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {mode === "contact" ? (
+                <ContactFields
+                  name={name} setName={setName}
+                  email={email} setEmail={setEmail}
+                  phone={phone} setPhone={setPhone}
+                  notes={notes} setNotes={setNotes}
+                />
+              ) : (
+                <>
+              {/* Tier picker.
+                  Mobile: 3-column grid of small cinema-slate cards — name on
+                  top, price on the bottom, selected state lifts to sage.
+                  Desktop: original pill row, unchanged in feel. */}
               <Field label="01 · TIER">
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-3 gap-2 md:flex md:flex-wrap md:gap-2">
                   {tiers.map((t) => {
                     const sel = tier === t.code;
                     return (
@@ -156,14 +231,30 @@ export default function Booking() {
                         key={t.code}
                         type="button"
                         onClick={() => setTier(t.code)}
+                        aria-pressed={sel}
                         className={
-                          "rounded-full border px-3 py-2 text-eyebrow-sm transition-colors " +
+                          // Mobile card; desktop pill. Two distinct visual languages,
+                          // one button, one selected-state vocabulary.
+                          "group relative flex flex-col items-center gap-1 rounded-[3px] border px-2 py-3 text-center transition-colors " +
+                          "md:flex-row md:items-center md:gap-1.5 md:rounded-full md:px-3 md:py-2 md:text-left " +
                           (sel
-                            ? "border-magenta bg-magenta text-paper"
-                            : "border-frame text-mist hover:text-paper hover:border-frame-strong")
+                            ? "border-sage bg-sage/15 text-paper md:border-magenta md:bg-magenta md:text-paper"
+                            : "border-frame-strong text-paper hover:border-paper md:border-frame md:text-mist")
                         }
                       >
-                        {t.name} · ${t.price}
+                        <span
+                          aria-hidden
+                          className={
+                            "absolute right-2 top-2 size-1.5 rounded-full transition-colors md:hidden " +
+                            (sel ? "bg-sage shadow-[0_0_8px_var(--color-sage)]" : "bg-frame-strong")
+                          }
+                        />
+                        <span className="font-display text-[1.05rem] leading-none md:text-eyebrow-sm md:font-mono md:tracking-[0.18em] md:uppercase">
+                          {t.name}
+                        </span>
+                        <span className="text-[0.62rem] tracking-[0.2em] uppercase tabular-nums text-haze md:text-eyebrow-sm md:tracking-normal md:tabular-nums md:text-inherit">
+                          ${t.price}
+                        </span>
                       </button>
                     );
                   })}
@@ -171,21 +262,21 @@ export default function Booking() {
               </Field>
 
               {/* Date + Size */}
-              <div className="mt-6 grid gap-6 md:grid-cols-2">
+              <div className="mt-7 grid gap-7 md:mt-6 md:grid-cols-2 md:gap-6">
                 <Field label="02 · DATE">
                   <input
                     type="date"
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-transparent border-b border-paper/30 md:border-frame-strong px-0 py-2 text-paper tabular-nums focus:outline-none focus:border-paper"
+                    className="w-full border-b border-paper/45 bg-transparent px-0 py-2.5 text-paper tabular-nums focus:border-paper focus:outline-none md:border-frame-strong md:py-2"
                   />
                 </Field>
                 <Field label="03 · SIZE">
                   <select
                     value={size}
                     onChange={(e) => setSize(e.target.value)}
-                    className="w-full bg-ink border-b border-paper/30 md:border-frame-strong px-0 py-2 text-paper focus:outline-none focus:border-paper"
+                    className="w-full border-b border-paper/45 bg-ink px-0 py-2.5 text-paper focus:border-paper focus:outline-none md:border-frame-strong md:py-2"
                   >
                     {sizes.map((s) => (
                       <option key={s.v} value={s.v} className="bg-ink">
@@ -197,7 +288,7 @@ export default function Booking() {
               </div>
 
               {/* Time slots */}
-              <Field label="04 · TIME · LIGHT" className="mt-6">
+              <Field label="04 · TIME · LIGHT" className="mt-7 md:mt-6">
                 <div className="-mx-1 flex flex-wrap gap-2">
                   {timeSlots.map((t) => {
                     const sel = time === t.v;
@@ -210,11 +301,11 @@ export default function Booking() {
                           "flex flex-col items-start gap-0.5 rounded-[2px] border px-3 py-2 text-left text-eyebrow-sm transition-colors " +
                           (sel
                             ? "border-paper bg-paper text-ink"
-                            : "border-frame text-mist hover:text-paper hover:border-frame-strong")
+                            : "border-frame-strong text-paper hover:border-paper md:border-frame md:text-mist")
                         }
                       >
                         <span className="tabular-nums">{t.label}</span>
-                        <span className={"text-[0.55rem] " + (sel ? "text-ink/70" : "text-mist")}>
+                        <span className={"text-[0.55rem] " + (sel ? "text-ink/70" : "text-haze md:text-mist")}>
                           {t.note}
                         </span>
                       </button>
@@ -224,19 +315,19 @@ export default function Booking() {
               </Field>
 
               {/* Address */}
-              <Field label="05 · PROPERTY ADDRESS" className="mt-6">
+              <Field label="05 · PROPERTY ADDRESS" className="mt-7 md:mt-6">
                 <input
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
                   placeholder="123 Lakeview Dr, Mercer Island, WA"
-                  className="w-full bg-transparent border-b border-paper/30 md:border-frame-strong px-0 py-2 text-paper placeholder:text-paper/55 md:placeholder:text-mist/60 focus:outline-none focus:border-paper"
+                  className="w-full border-b border-paper/45 bg-transparent px-0 py-2.5 text-paper placeholder:text-paper/55 focus:border-paper focus:outline-none md:border-frame-strong md:py-2 md:placeholder:text-mist/60"
                 />
               </Field>
 
               {/* Contact */}
-              <div className="mt-6 grid gap-6 md:grid-cols-2">
+              <div className="mt-7 grid gap-7 md:mt-6 md:grid-cols-2 md:gap-6">
                 <Field label="06 · NAME">
                   <input
                     type="text"
@@ -244,7 +335,7 @@ export default function Booking() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your name"
-                    className="w-full bg-transparent border-b border-paper/30 md:border-frame-strong px-0 py-2 text-paper placeholder:text-paper/55 md:placeholder:text-mist/60 focus:outline-none focus:border-paper"
+                    className="w-full border-b border-paper/45 bg-transparent px-0 py-2.5 text-paper placeholder:text-paper/55 focus:border-paper focus:outline-none md:border-frame-strong md:py-2 md:placeholder:text-mist/60"
                   />
                 </Field>
                 <Field label="07 · EMAIL">
@@ -254,40 +345,42 @@ export default function Booking() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@brokerage.com"
-                    className="w-full bg-transparent border-b border-paper/30 md:border-frame-strong px-0 py-2 text-paper placeholder:text-paper/55 md:placeholder:text-mist/60 focus:outline-none focus:border-paper"
+                    className="w-full border-b border-paper/45 bg-transparent px-0 py-2.5 text-paper placeholder:text-paper/55 focus:border-paper focus:outline-none md:border-frame-strong md:py-2 md:placeholder:text-mist/60"
                   />
                 </Field>
               </div>
 
-              <Field label="08 · PHONE" className="mt-6">
+              <Field label="08 · PHONE" className="mt-7 md:mt-6">
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="(206) 555-0000"
-                  className="w-full bg-transparent border-b border-paper/30 md:border-frame-strong px-0 py-2 text-paper placeholder:text-paper/55 md:placeholder:text-mist/60 focus:outline-none focus:border-paper"
+                  className="w-full border-b border-paper/45 bg-transparent px-0 py-2.5 text-paper placeholder:text-paper/55 focus:border-paper focus:outline-none md:border-frame-strong md:py-2 md:placeholder:text-mist/60"
                 />
               </Field>
 
-              <Field label="09 · NOTES" className="mt-6">
+              <Field label="09 · NOTES" className="mt-7 md:mt-6">
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
                   placeholder="Twilight requested? Vacant or staged? Anything tricky about the property?"
-                  className="w-full resize-none bg-transparent border border-paper/30 md:border-frame-strong rounded-[2px] px-3 py-2 text-paper placeholder:text-paper/55 md:placeholder:text-mist/60 focus:outline-none focus:border-paper"
+                  className="w-full resize-none rounded-[2px] border border-paper/45 bg-transparent px-3 py-2 text-paper placeholder:text-paper/55 focus:border-paper focus:outline-none md:border-frame-strong md:placeholder:text-mist/60"
                 />
               </Field>
+                </>
+              )}
 
-              <div className="mt-8 flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between">
-                <p className="text-eyebrow-sm text-mist">
+              <div className="mt-9 flex flex-col items-stretch gap-4 md:mt-8 md:flex-row md:items-center md:justify-between md:gap-3">
+                <p className="order-2 text-[0.62rem] tracking-[0.18em] uppercase text-haze md:order-1 md:text-eyebrow-sm md:text-mist">
                   ▶ SUBMITS VIA YOUR MAIL CLIENT · NO ACCOUNT REQUIRED
                 </p>
                 <button
                   type="submit"
-                  className="group inline-flex items-center justify-between gap-3 rounded-full bg-paper px-5 py-3 text-eyebrow text-ink transition-colors hover:bg-magenta hover:text-paper"
+                  className="group order-1 inline-flex w-full items-center justify-between gap-3 rounded-full bg-paper px-5 py-3.5 text-eyebrow text-ink transition-colors hover:bg-magenta hover:text-paper md:order-2 md:w-auto md:py-3"
                 >
-                  SEND BOOKING REQUEST
+                  {mode === "contact" ? "REQUEST A CALLBACK" : "SEND BOOKING REQUEST"}
                   <ArrowRight className="transition-transform group-hover:translate-x-0.5" />
                 </button>
               </div>
@@ -296,6 +389,78 @@ export default function Booking() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function ContactFields({
+  name,
+  setName,
+  email,
+  setEmail,
+  phone,
+  setPhone,
+  notes,
+  setNotes,
+}: {
+  name: string;
+  setName: (v: string) => void;
+  email: string;
+  setEmail: (v: string) => void;
+  phone: string;
+  setPhone: (v: string) => void;
+  notes: string;
+  setNotes: (v: string) => void;
+}) {
+  return (
+    <>
+      <p className="mb-6 max-w-[42ch] text-[0.92rem] leading-snug text-haze md:text-sm md:text-mist">
+        Leave a number or email and Ben will reach out within the hour, 7am–9pm
+        Pacific. No phone tag, no quote forms.
+      </p>
+
+      <div className="grid gap-7 md:grid-cols-2 md:gap-6">
+        <Field label="01 · NAME">
+          <input
+            type="text"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your name"
+            className="w-full border-b border-paper/45 bg-transparent px-0 py-2.5 text-paper placeholder:text-paper/55 focus:border-paper focus:outline-none md:border-frame-strong md:py-2 md:placeholder:text-mist/60"
+          />
+        </Field>
+        <Field label="02 · EMAIL">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@brokerage.com"
+            className="w-full border-b border-paper/45 bg-transparent px-0 py-2.5 text-paper placeholder:text-paper/55 focus:border-paper focus:outline-none md:border-frame-strong md:py-2 md:placeholder:text-mist/60"
+          />
+        </Field>
+      </div>
+
+      <Field label="03 · PHONE · OPTIONAL" className="mt-7 md:mt-6">
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="(206) 555-0000"
+          className="w-full border-b border-paper/45 bg-transparent px-0 py-2.5 text-paper placeholder:text-paper/55 focus:border-paper focus:outline-none md:border-frame-strong md:py-2 md:placeholder:text-mist/60"
+        />
+      </Field>
+
+      <Field label="04 · WHAT TO COVER" className="mt-7 md:mt-6">
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={4}
+          placeholder="Listing address, target timeframe, anything tricky about the property — Ben will follow up with options."
+          className="w-full resize-none rounded-[2px] border border-paper/45 bg-transparent px-3 py-2.5 text-paper placeholder:text-paper/55 focus:border-paper focus:outline-none md:border-frame-strong md:placeholder:text-mist/60"
+        />
+      </Field>
+    </>
   );
 }
 
@@ -311,8 +476,8 @@ function Field({
   return (
     <label className={"block " + className}>
       {/* Mobile gets brighter labels so the form reads as foreground; desktop label color unchanged. */}
-      <span className="block text-eyebrow-sm text-haze md:text-mist">{label}</span>
-      <span className="mt-2 block">{children}</span>
+      <span className="block text-[0.62rem] tracking-[0.2em] uppercase text-paper md:text-eyebrow-sm md:text-mist">{label}</span>
+      <span className="mt-3 block md:mt-2">{children}</span>
     </label>
   );
 }

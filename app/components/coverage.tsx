@@ -15,10 +15,11 @@ export default function Coverage() {
       <div className="mx-auto max-w-[1600px] px-4 md:px-8">
         <div className="grid gap-8 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-3">
-            <div className="text-eyebrow text-blue-hour">
+            {/* Coverage eyebrow: brighter on mobile so it doesn't drown in the ink background. */}
+            <div className="text-eyebrow text-daylight md:text-blue-hour">
               <ScrambleText text=">> COVERAGE" />
             </div>
-            <p className="mt-3 text-eyebrow-sm text-mist">{radius.toUpperCase()}</p>
+            <p className="mt-3 text-eyebrow-sm text-haze md:text-mist">{radius.toUpperCase()}</p>
           </div>
 
           <div className="md:col-span-9">
@@ -27,13 +28,13 @@ export default function Coverage() {
               <em className="not-italic [font-style:italic] text-paper">
                 one Sound,
               </em>{" "}
-              <span className="text-mist">on call by sunrise.</span>
+              <span className="text-paper md:text-mist">on call by sunrise.</span>
             </h2>
           </div>
         </div>
 
         <div className="mt-12 grid gap-8 md:mt-20 md:grid-cols-12 md:gap-8">
-          {/* Map */}
+          {/* Map — phone gets a square crop + larger SVG text via the .bp-mobile selector. */}
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -56,20 +57,20 @@ export default function Coverage() {
               <motion.li
                 key={c.name}
                 variants={fadeUp}
-                className="flex items-baseline justify-between border-b border-frame py-4"
+                className="flex items-baseline justify-between border-b border-frame py-4 md:py-4"
               >
-                <span className="text-eyebrow-sm tabular-nums text-mist">
+                <span className="text-eyebrow-sm tabular-nums text-haze md:text-mist">
                   [{String(i + 1).padStart(2, "0")}]
                 </span>
-                <span className="flex-1 px-4 font-display text-[1.4rem] text-paper">
+                <span className="flex-1 px-4 font-display text-[1.65rem] text-paper md:text-[1.4rem]">
                   {c.name}
                 </span>
-                <span className="hidden text-eyebrow-sm tabular-nums text-mist sm:inline-block">
+                <span className="text-eyebrow-sm tabular-nums text-haze md:text-mist">
                   {c.tier === "core" ? "CORE" : "EDGE"}
                 </span>
               </motion.li>
             ))}
-            <li className="mt-6 text-eyebrow-sm text-mist">
+            <li className="mt-6 text-eyebrow-sm text-haze md:text-mist">
               ▶ TRAVEL FEES BEYOND 30 MILES · ASK ABOUT WHIDBEY, BAINBRIDGE,
               POULSBO
             </li>
@@ -82,7 +83,7 @@ export default function Coverage() {
 
 function Blueprint() {
   return (
-    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2px] border border-frame bg-gradient-to-br from-blue-hour/20 via-ink to-ink p-3 md:p-6">
+    <div className="coverage-map relative aspect-[5/4] w-full overflow-hidden rounded-[2px] border border-frame bg-gradient-to-br from-blue-hour/30 via-ink to-ink p-3 md:aspect-[4/3] md:p-6">
       {/* Outer corner brackets */}
       <CornerBrackets />
 
@@ -198,12 +199,33 @@ function Blueprint() {
       </svg>
 
       {/* Top label */}
-      <div className="absolute left-3 top-3 text-eyebrow-sm text-mist md:left-6 md:top-6">
+      <div className="absolute left-3 top-3 text-eyebrow-sm text-haze md:left-6 md:top-6 md:text-mist">
         PUGET SOUND · SERVICE BLUEPRINT
       </div>
       <div className="absolute right-3 top-3 hidden text-eyebrow-sm text-mist sm:block md:right-6 md:top-6">
         47.6° N · 122.3° W
       </div>
+
+      {/* Mobile-only: enlarge SVG text + brighten city dots so the map reads on a phone.
+          Selectors are scoped to .coverage-map and only fire below the md breakpoint. */}
+      <style jsx>{`
+        @media (max-width: 767px) {
+          :global(.coverage-map text) {
+            font-size: 2.4px;
+            fill: rgba(250, 247, 242, 0.95);
+          }
+          :global(.coverage-map text[font-size="0.9"]) {
+            font-size: 1.7px;
+            fill: rgba(250, 247, 242, 0.7);
+          }
+          :global(.coverage-map text[font-size="1.2"]) {
+            font-size: 1.9px;
+          }
+          :global(.coverage-map text[font-size="1.4"]) {
+            font-size: 2.3px;
+          }
+        }
+      `}</style>
     </div>
   );
 }

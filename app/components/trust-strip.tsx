@@ -26,7 +26,9 @@ export default function TrustStrip() {
       aria-label="Trust signals"
       className="relative border-y border-frame bg-graphite/30"
     >
-      <div className="mx-auto max-w-[1600px] px-4 py-12 md:px-8 md:py-16">
+      {/* Trusted-by intro + stat grid — moved into the Photographer section on mobile.
+          Hidden on phones (the marquee below carries the brand recognition); restored from md+. */}
+      <div className="mx-auto hidden max-w-[1600px] px-4 py-12 md:block md:px-8 md:py-16">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -64,9 +66,11 @@ export default function TrustStrip() {
         </motion.div>
       </div>
 
-      {/* Brokerage marquee */}
+      {/* Brokerage marquee.
+          Mobile: smaller type + tighter spacing + faster speed → more brands in frame at once.
+          Desktop: original cinematic pace, larger italic Fraunces. */}
       <div
-        className="relative overflow-hidden border-t border-frame py-5"
+        className="relative overflow-hidden border-t border-frame py-3 md:border-y md:py-5"
         style={{
           WebkitMaskImage:
             "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)",
@@ -75,12 +79,12 @@ export default function TrustStrip() {
         }}
       >
         <div className="flex animate-marquee whitespace-nowrap will-change-transform">
-          {[...brokerages, ...brokerages, ...brokerages].map((b, i) => (
+          {[...brokerages, ...brokerages, ...brokerages, ...brokerages].map((b, i) => (
             <span
               key={i}
-              className="mx-8 inline-flex items-center gap-8 text-eyebrow text-mist"
+              className="mx-4 inline-flex items-center gap-4 text-eyebrow text-mist md:mx-8 md:gap-8"
             >
-              <span className="font-display text-[1.25rem] tracking-tight text-paper [font-style:italic]">
+              <span className="font-display text-[0.95rem] tracking-tight text-paper [font-style:italic] md:text-[1.25rem]">
                 {b}
               </span>
               <span aria-hidden className="text-frame-strong">
@@ -93,15 +97,15 @@ export default function TrustStrip() {
         <style jsx>{`
           @keyframes marquee {
             from { transform: translateX(0); }
-            to   { transform: translateX(-33.333%); }
+            to   { transform: translateX(-25%); }
           }
           .animate-marquee {
-            animation: marquee 22s linear infinite;
+            animation: marquee 14s linear infinite;
           }
-          /* Desktop keeps the original slower 38s pace. */
+          /* Desktop keeps the original slower 38s pace, but with the new 4-cycle pattern. */
           @media (min-width: 768px) {
             .animate-marquee {
-              animation-duration: 38s;
+              animation-duration: 42s;
             }
           }
           @media (prefers-reduced-motion: reduce) {
