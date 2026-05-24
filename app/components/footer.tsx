@@ -31,7 +31,7 @@ export default function Footer() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={stagger(0.07, 0.05)}
-          className="grid gap-12 md:grid-cols-12 md:gap-x-24 lg:gap-x-36"
+          className="grid gap-12 md:grid-cols-12 md:gap-x-8"
         >
           {/* Left column: contact */}
           <div className="md:col-span-5">
@@ -78,8 +78,11 @@ export default function Footer() {
             </motion.ul>
           </div>
 
-          {/* Right column: meta — hidden on mobile per editorial pass; keeps the footer clean on phone. */}
-          <motion.div variants={fadeUp} className="hidden md:col-span-7 md:block">
+          {/* Right column: meta — hidden on mobile per editorial pass; keeps
+              the footer clean on phone. col-start-8 leaves col 7 empty as a
+              dedicated gap column on desktop so CONTACT and SEATTLE LIGHT
+              TODAY read as separate panels rather than one block. */}
+          <motion.div variants={fadeUp} className="hidden md:col-span-6 md:col-start-8 md:block">
             <div className="text-eyebrow text-mist">
               <span className="text-magenta">▼</span> SEATTLE LIGHT TODAY
             </div>
