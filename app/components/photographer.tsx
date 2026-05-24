@@ -126,7 +126,9 @@ export default function Photographer() {
           </div>
         </motion.figure>
 
-        {/* Pull quote — flows as a single paragraph, like the desktop version. */}
+        {/* Pull quote — " sits on the same row as the text, overlapping the
+            first word from above-left so it reads as a typographic flourish
+            rather than a separate decorative element. */}
         <motion.blockquote
           initial="hidden"
           whileInView="visible"
@@ -137,13 +139,14 @@ export default function Photographer() {
           <motion.span
             variants={fadeUp}
             aria-hidden
-            className="block font-display text-[3rem] leading-none text-sage opacity-70"
+            className="pointer-events-none absolute -left-2 -top-5 font-display text-[4.5rem] leading-none text-sage"
+            style={{ fontVariationSettings: '"opsz" 144, "SOFT" 60' }}
           >
             &ldquo;
           </motion.span>
           <motion.p
             variants={fadeUp}
-            className="-mt-1 font-display text-[2rem] leading-[1.06] tracking-[-0.018em] text-paper"
+            className="relative font-display text-[2rem] leading-[1.06] tracking-[-0.018em] text-paper"
             style={{ fontVariationSettings: '"opsz" 96, "SOFT" 35' }}
           >
             <em className="not-italic [font-style:italic]">Buyers scroll.</em>{" "}
@@ -307,17 +310,19 @@ export default function Photographer() {
             variants={stagger(0.08, 0.18)}
             className="col-span-7 flex flex-col"
           >
-            {/* Pull quote — the moment. The opening " sits inline so it
-                cannot collide with the column edge under overflow:hidden. */}
+            {/* Pull quote — the moment. The opening " is absolutely positioned
+                so it overlaps the first word of the quote rather than living on
+                its own row. Bright sage so it reads as part of the headline. */}
             <motion.blockquote variants={fadeUp} className="relative pl-1">
               <span
                 aria-hidden
-                className="block font-display text-[5rem] leading-none text-sage opacity-55 lg:text-[6.5rem]"
+                className="pointer-events-none absolute -left-3 -top-6 font-display text-[clamp(4rem,5.5vw,7rem)] leading-none text-sage lg:-top-10"
+                style={{ fontVariationSettings: '"opsz" 144, "SOFT" 70, "WONK" 1' }}
               >
                 &ldquo;
               </span>
               <p
-                className="-mt-3 font-display text-[clamp(2.4rem,3.8vw,4.2rem)] leading-[1.0] tracking-[-0.02em] text-paper"
+                className="relative font-display text-[clamp(2.4rem,3.8vw,4.2rem)] leading-[1.0] tracking-[-0.02em] text-paper"
                 style={{ fontVariationSettings: '"opsz" 144, "SOFT" 60, "WONK" 1' }}
               >
                 <em className="not-italic [font-style:italic]">Buyers scroll.</em>{" "}

@@ -105,7 +105,7 @@ export default function Gallery() {
                   onClick={() => setActiveAndReset(f)}
                   data-cursor="frame"
                   className={
-                    "group relative inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-eyebrow-sm transition-colors sm:min-h-0 sm:px-3.5 " +
+                    "group relative inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[0.58rem] tracking-[0.18em] uppercase transition-colors sm:min-h-0 sm:px-3.5 sm:py-2 sm:text-eyebrow-sm " +
                     (isActive
                       ? "border-paper bg-paper text-ink"
                       : "border-frame text-mist hover:text-paper hover:border-frame-strong")
@@ -164,24 +164,6 @@ export default function Gallery() {
           </div>
         )}
 
-        {/* Footer note.
-            Mobile: centered stack with explicit padding so the line breaks
-            cleanly and sits in its own block between the grid and the next
-            section. Desktop: original row-aligned layout. */}
-        <div className="mt-20 flex flex-col items-center gap-4 border-t border-frame pt-8 pb-4 text-center md:mt-24 md:flex-row md:flex-wrap md:items-center md:justify-between md:pb-0 md:text-left">
-          <p className="max-w-[34ch] text-[0.62rem] leading-relaxed tracking-[0.2em] uppercase text-mist md:max-w-none md:text-eyebrow-sm md:leading-normal">
-            <span className="text-sage">▶</span>{" "}
-            EVERY FRAME EDITED BY HAND · NO STOCK · NO AI COMPOSITES
-          </p>
-          <a
-            href="#book"
-            data-cursor="frame"
-            className="hidden min-h-11 items-center gap-2 py-2 text-eyebrow text-paper transition-colors hover:text-magenta sm:inline-flex sm:min-h-0 sm:py-0"
-          >
-            BOOK YOUR LISTING
-            <span aria-hidden>→</span>
-          </a>
-        </div>
       </div>
 
       {/* Lightbox */}

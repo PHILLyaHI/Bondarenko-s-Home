@@ -205,7 +205,7 @@ export default function Testimonials() {
   return (
     <section
       aria-label="Testimonials"
-      className="relative bg-graphite/30 py-24 md:py-24"
+      className="relative bg-graphite/30 py-20 md:py-16"
     >
       <div className="mx-auto max-w-[1600px] px-4 md:px-8">
         <div className="grid gap-8 md:grid-cols-12 md:gap-8">
@@ -264,8 +264,8 @@ export default function Testimonials() {
                     : i === 0
                     ? "md:col-span-5"
                     : i === 1
-                    ? "md:col-span-4 md:col-start-7 md:mt-12"
-                    : "md:col-span-5 md:col-start-2 md:mt-4")
+                    ? "md:col-span-4 md:col-start-7 md:mt-6"
+                    : "md:col-span-5 md:col-start-2 md:mt-2")
                 }
               >
                 <figure className="relative flex h-full flex-col gap-4 border-t border-frame pt-6 md:gap-6 md:border-l md:border-t-0 md:border-magenta md:pl-7 md:pt-0">

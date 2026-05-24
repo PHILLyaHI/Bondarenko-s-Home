@@ -378,13 +378,10 @@ export default function Booking() {
                 </>
               )}
 
-              <div className="mt-9 flex flex-col items-stretch gap-4 md:mt-8 md:flex-row md:items-center md:justify-between md:gap-3">
-                <p className="order-2 text-[0.62rem] tracking-[0.18em] uppercase text-haze md:order-1 md:text-eyebrow-sm md:text-mist">
-                  ▶ SUBMITS VIA YOUR MAIL CLIENT · NO ACCOUNT REQUIRED
-                </p>
+              <div className="mt-9 flex md:mt-8 md:justify-end">
                 <button
                   type="submit"
-                  className="group order-1 inline-flex w-full items-center justify-between gap-3 rounded-full bg-paper px-5 py-3.5 text-eyebrow text-ink transition-colors hover:bg-magenta hover:text-paper md:order-2 md:w-auto md:py-3"
+                  className="group inline-flex w-full items-center justify-between gap-3 rounded-full bg-paper px-5 py-3.5 text-eyebrow text-ink transition-colors hover:bg-magenta hover:text-paper md:w-auto md:py-3"
                 >
                   {mode === "contact" ? "REQUEST A CALLBACK" : "SEND BOOKING REQUEST"}
                   <ArrowRight className="transition-transform group-hover:translate-x-0.5" />

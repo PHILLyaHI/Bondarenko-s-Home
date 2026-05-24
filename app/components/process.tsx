@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useSpring, useTransform } from "motion/react";
+import { motion } from "motion/react";
 import { fadeUp, stagger } from "@/lib/motion-variants";
 import ScrambleText from "./fx/scramble-text";
 
@@ -132,129 +131,22 @@ export default function Process() {
 }
 
 /**
- * Mobile "Call Sheet" timeline.
+ * Mobile workflow — call-sheet row stack.
  *
- * Aesthetic — a film-set production board / publication call sheet:
- *  - A horizontal 24-hour day arc at the top, scaled to the section's scroll
- *    progress. A glowing dot traces from blue-hour through golden to dusk
- *    and back, marking where you are in the workflow as you scroll.
- *  - Below the arc, the four steps are laid out as editorial rows:
- *    big italic Fraunces frame number on the right, mono time stamp on the
- *    left, display title, body. A hairline rule separates rows like a
- *    schedule.
- *  - Each row reveals on entry: the time slides from the left, the number
- *    stamps in with a tiny rotation, title slides up, body fades.
- *  - One bold typographic move per row, otherwise restrained chrome — the
- *    professionalism the user asked for comes from the proportions.
+ * Each step renders as an editorial row: time column on the left, big
+ * italic Fraunces frame number on the right, then title + body spanning
+ * underneath. Rows are separated by a visible hairline border so the
+ * schedule beat is clear without competing typographic chrome.
  */
 function MobileFilmstrip({ steps }: { steps: Step[] }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 75%", "end 30%"],
-  });
-  const smooth = useSpring(scrollYProgress, {
-    stiffness: 90,
-    damping: 26,
-    mass: 0.45,
-  });
-  const arcDotLeft = useTransform(smooth, (v) => `${Math.min(1, Math.max(0, v)) * 100}%`);
-  const arcFillWidth = useTransform(smooth, (v) => `${Math.min(1, Math.max(0, v)) * 100}%`);
-
-  // Markers along the day arc, positioned by their notional hour 0–24.
-  // 08:30 → 35.4% ; 10:00 → 41.6% ; 21:00 → 87.5% ; +1d 09:00 → reuse 37.5%
-  // We layout them as ascending fractions across the arc visually.
-  const arcStops = [
-    { time: "08:30", pos: 0.05, label: "Book" },
-    { time: "10:00", pos: 0.32, label: "Shoot" },
-    { time: "21:00", pos: 0.68, label: "Edit" },
-    { time: "09:00", pos: 0.95, label: "Deliver" },
-  ];
-
   return (
-    <div ref={ref} className="relative mt-10 md:hidden">
-      {/* ── Call-sheet header strip ─────────────────────────────────────── */}
-      <div className="mb-6 flex items-center justify-between text-[0.58rem] tracking-[0.22em] uppercase tabular-nums text-mist">
+    <div className="relative mt-8 md:hidden">
+      <div className="mb-5 flex items-center justify-between text-[0.58rem] tracking-[0.22em] uppercase tabular-nums text-mist">
         <span className="text-paper">CALL SHEET · SHOOT DAY</span>
         <span className="text-haze">04 SCENES</span>
       </div>
 
-      {/* ── 24-hour day arc ─────────────────────────────────────────────── */}
-      <div className="relative h-[68px] w-full">
-        {/* Hour ticks */}
-        <div className="absolute inset-x-0 top-7 flex justify-between">
-          {Array.from({ length: 25 }).map((_, k) => (
-            <span
-              key={k}
-              aria-hidden
-              className={
-                "block w-px " +
-                (k % 6 === 0 ? "h-2.5 bg-paper/70" : "h-1.5 bg-frame-strong")
-              }
-            />
-          ))}
-        </div>
-        {/* Hour rail (track) */}
-        <div
-          aria-hidden
-          className="absolute inset-x-0 top-[27px] h-px"
-          style={{
-            background:
-              "linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.28) 50%, rgba(255,255,255,0.06) 100%)",
-          }}
-        />
-        {/* Day-color fill — chases scroll progress */}
-        <motion.div
-          aria-hidden
-          style={{ width: arcFillWidth }}
-          className="absolute left-0 top-[26px] h-[3px] origin-left rounded-full"
-        >
-          <div
-            className="h-full w-full rounded-full"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(45,85,96,0) 0%, rgba(123,165,144,0.85) 18%, rgba(200,152,96,0.9) 55%, rgba(62,107,93,0.95) 82%, rgba(45,85,96,0.6) 100%)",
-              boxShadow: "0 0 14px rgba(200,152,96,0.45)",
-            }}
-          />
-        </motion.div>
-        {/* Marker stops with labels */}
-        {arcStops.map((stop, i) => (
-          <div
-            key={i}
-            aria-hidden
-            className="absolute top-0"
-            style={{ left: `${stop.pos * 100}%`, transform: "translateX(-50%)" }}
-          >
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-[0.55rem] tracking-[0.18em] tabular-nums text-paper">
-                {stop.time}
-              </span>
-              <span className="block size-2 rounded-full border border-paper/60 bg-ink" />
-              <span className="text-[0.5rem] tracking-[0.22em] uppercase text-haze">
-                {stop.label}
-              </span>
-            </div>
-          </div>
-        ))}
-        {/* Moving day-position indicator */}
-        <motion.span
-          aria-hidden
-          style={{ left: arcDotLeft }}
-          className="absolute top-[22px] -translate-x-1/2"
-        >
-          <span
-            className="block size-[14px] rounded-full bg-paper"
-            style={{
-              boxShadow:
-                "0 0 0 4px var(--color-ink), 0 0 12px rgba(200,152,96,0.75)",
-            }}
-          />
-        </motion.span>
-      </div>
-
-      {/* ── Editorial row stack ─────────────────────────────────────────── */}
-      <ol className="mt-12">
+      <ol>
         {steps.map((s, i) => (
           <CallSheetRow
             key={s.code}
@@ -266,8 +158,7 @@ function MobileFilmstrip({ steps }: { steps: Step[] }) {
         ))}
       </ol>
 
-      {/* ── Footnote ───────────────────────────────────────────────────── */}
-      <div className="mt-6 flex items-center gap-3 text-[0.58rem] tracking-[0.22em] uppercase text-haze">
+      <div className="mt-4 flex items-center gap-3 text-[0.58rem] tracking-[0.22em] uppercase text-haze">
         <span aria-hidden className="h-px flex-1 bg-frame-strong" />
         <span>SAME-DAY RUSH · ON REQUEST</span>
         <span aria-hidden className="h-px flex-1 bg-frame-strong" />
@@ -292,32 +183,29 @@ function CallSheetRow({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.45 }}
-      variants={stagger(0.08, 0.05)}
+      variants={stagger(0.07, 0.05)}
       className={
-        "grid grid-cols-[auto_1fr] gap-x-5 gap-y-3 pb-8 " +
-        (isLast ? "" : "mb-8 border-b border-frame")
+        "grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 pb-6 " +
+        (isLast ? "" : "mb-6 border-b border-paper/25")
       }
     >
       {/* Time column */}
       <motion.div
         variants={{
-          hidden: { x: -16, opacity: 0 },
+          hidden: { x: -14, opacity: 0 },
           visible: {
             x: 0,
             opacity: 1,
-            transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+            transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
           },
         }}
-        className="flex flex-col items-start gap-2 pt-1"
+        className="flex flex-col items-start gap-1.5 pt-1"
       >
-        <span className="text-[0.55rem] tracking-[0.24em] uppercase tabular-nums text-mist">
+        <span className="text-[0.52rem] tracking-[0.24em] uppercase tabular-nums text-mist">
           {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </span>
-        <span className="font-mono text-[1.05rem] tabular-nums text-paper">
+        <span className="font-mono text-[0.92rem] tabular-nums text-paper">
           {step.time}
-        </span>
-        <span className="text-[0.55rem] tracking-[0.22em] uppercase text-haze">
-          {step.caption}
         </span>
       </motion.div>
 
@@ -325,54 +213,41 @@ function CallSheetRow({
       <motion.span
         aria-hidden
         variants={{
-          hidden: { opacity: 0, scale: 0.7, rotate: -6 },
+          hidden: { opacity: 0, scale: 0.75, rotate: -5 },
           visible: {
             opacity: 1,
             scale: 1,
             rotate: 0,
-            transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.05 },
+            transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.05 },
           },
         }}
-        className="row-span-1 self-start justify-self-end font-display text-[3.6rem] leading-[0.85] text-paper"
+        className="row-span-1 self-start justify-self-end font-display text-[2.9rem] leading-[0.85] text-paper"
         style={{ fontVariationSettings: '"opsz" 144, "SOFT" 80, "WONK" 1' }}
       >
         <em className="not-italic [font-style:italic]">{step.code}</em>
       </motion.span>
 
       {/* Content column (spans both grid columns underneath) */}
-      <div className="col-span-2 -mt-2">
+      <div className="col-span-2 -mt-1">
         <motion.h3
           variants={{
-            hidden: { y: 18, opacity: 0 },
+            hidden: { y: 14, opacity: 0 },
             visible: {
               y: 0,
               opacity: 1,
-              transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.08 },
+              transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.08 },
             },
           }}
-          className="font-display text-[1.6rem] leading-[1.05] tracking-[-0.012em] text-paper"
+          className="font-display text-[1.3rem] leading-[1.08] tracking-[-0.012em] text-paper"
         >
           {step.title}
         </motion.h3>
         <motion.p
           variants={fadeUp}
-          className="mt-3 max-w-[44ch] text-[0.95rem] leading-[1.55] text-paper/75"
+          className="mt-2 max-w-[44ch] text-[0.85rem] leading-[1.5] text-paper/75"
         >
           {step.body}
         </motion.p>
-
-        {/* Hairline connector + index pip — sits at the bottom of each row's
-            content so the eye gets a horizontal cue between scenes. */}
-        <motion.div
-          variants={fadeUp}
-          className="mt-5 flex items-center gap-3"
-        >
-          <span aria-hidden className="block h-px w-12 bg-paper/55" />
-          <span className="text-[0.55rem] tracking-[0.24em] uppercase tabular-nums text-paper/60">
-            SCENE · {String(index + 1).padStart(2, "0")}
-          </span>
-          <span aria-hidden className="block h-px flex-1 bg-frame-strong" />
-        </motion.div>
       </div>
     </motion.li>
   );

@@ -164,15 +164,15 @@ function Stat({ label, value, mono = false }: { label: string; value: string; mo
 }
 
 function StickyCTA() {
-  const [scrolledPastHero, setScrolledPastHero] = useState(false);
-  const [nearBottom, setNearBottom] = useState(false);
+  const [photographerPassed, setPhotographerPassed] = useState(false);
+  const [pricingVisible, setPricingVisible] = useState(false);
   const [bookingVisible, setBookingVisible] = useState(false);
+  const [nearBottom, setNearBottom] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
       const max = document.documentElement.scrollHeight - window.innerHeight;
-      setScrolledPastHero(y > window.innerHeight * 0.8);
       setNearBottom(max > 0 ? y / max > 0.92 : false);
     };
     onScroll();
@@ -180,6 +180,37 @@ function StickyCTA() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Photographer is the second content section. CTA only starts showing
+  // once it has scrolled fully out of view above the viewport.
+  useEffect(() => {
+    const target = document.querySelector('section[aria-label="The photographer"]');
+    if (!target) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        // bottom-of-section above viewport top → fully passed
+        const rect = entry.boundingClientRect;
+        const past = !entry.isIntersecting && rect.bottom <= 0;
+        setPhotographerPassed(past);
+      },
+      { threshold: [0, 0.01], rootMargin: "0px 0px 0px 0px" }
+    );
+    obs.observe(target);
+    return () => obs.disconnect();
+  }, []);
+
+  // Pricing section — hide CTA while user is reading tiers.
+  useEffect(() => {
+    const target = document.getElementById("pricing");
+    if (!target) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setPricingVisible(entry.isIntersecting),
+      { threshold: 0, rootMargin: "0px 0px -10% 0px" }
+    );
+    obs.observe(target);
+    return () => obs.disconnect();
+  }, []);
+
+  // Booking section — also hide when user has reached the booking form.
   useEffect(() => {
     const target = document.getElementById("book");
     if (!target) return;
@@ -191,7 +222,7 @@ function StickyCTA() {
     return () => obs.disconnect();
   }, []);
 
-  const show = scrolledPastHero && !bookingVisible && !nearBottom;
+  const show = photographerPassed && !pricingVisible && !bookingVisible && !nearBottom;
 
   return (
     <div

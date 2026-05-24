@@ -61,9 +61,9 @@
 
 @utility display-1 {
   font-family: var(--font-display);
-  font-size: clamp(2.75rem, 11vw, 9.5rem);
-  line-height: 0.92;
-  letter-spacing: -0.028em;
+  font-size: clamp(2.5rem, 8.5vw, 7.25rem);
+  line-height: 0.94;
+  letter-spacing: -0.026em;
   font-weight: 400;
   font-variation-settings: "opsz" 144, "SOFT" 50;
 }
