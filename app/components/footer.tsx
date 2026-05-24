@@ -31,7 +31,7 @@ export default function Footer() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={stagger(0.07, 0.05)}
-          className="grid gap-12 md:grid-cols-12 md:gap-16 lg:gap-20"
+          className="grid gap-12 md:grid-cols-12 md:gap-x-24 lg:gap-x-36"
         >
           {/* Left column: contact */}
           <div className="md:col-span-5">
